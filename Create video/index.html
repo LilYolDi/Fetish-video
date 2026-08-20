@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Добавить видео — Y-FETISH</title>
+
+    <!-- Подключение общего CSS сайта -->
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Стили именно страницы публикации -->
+    <style>
+
+        /* ================================
+           СТРАНИЦА ПУБЛИКАЦИИ
+        ================================= */
+
+        .create-page {
+            width: min(800px, calc(100% - 30px));
+
+            margin: 40px auto;
+
+            padding: 35px;
+
+            background: #151519;
+
+            border: 1px solid #2c2c33;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 20px 60px
+                rgba(0, 0, 0, 0.35);
+        }
+
+
+        .create-page h1 {
+            margin: 0 0 30px;
+
+            font-size: 30px;
+
+            color: #ffffff;
+        }
+
+
+        /* ================================
+           ФОРМА
+        ================================= */
+
+        #uploadForm {
+            width: 100%;
+        }
+
+
+        .form-group {
+            width: 100%;
+
+            margin-bottom: 24px;
+        }
+
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #eeeeee;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        /* ================================
+           INPUT
+        ================================= */
+
+        .form-group input[type="text"],
+        .form-group select {
+
+            width: 100%;
+
+            height: 48px;
+
+            padding: 0 14px;
+
+            background: #0f0f13;
+
+            color: #ffffff;
+
+            border: 1px solid #35353d;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+
+            outline: none;
+
+        }
+
+
+        .form-group input[type="text"]:focus,
+        .form-group select:focus {
+
+            border-color: #ff1744;
+
+        }
+
+
+        /* ================================
+           FILE INPUT
+        ================================= */
+
+        .form-group input[type="file"] {
+
+            display: block;
+
+            width: 100%;
+
+            padding: 12px;
+
+            background: #0f0f13;
+
+            color: #cccccc;
+
+            border: 1px dashed #44444c;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+        }
+
+
+        /* ================================
+           ПРЕДПРОСМОТР ВИДЕО
+        ================================= */
+
+        .video-preview {
+
+            width: 100%;
+
+            margin: 10px 0 25px;
+
+            display: flex;
+
+            justify-content: center;
+
+        }
+
+
+        .video-preview video {
+
+            display: block;
+
+            width: 100%;
+
+            max-width: 720px;
+
+            max-height: 420px;
+
+            background: #000000;
+
+            border-radius: 12px;
+
+            border: 1px solid #33333a;
+
+        }
+
+
+        /* ================================
+           ПРЕДПРОСМОТР ОБЛОЖКИ
+        ================================= */
+
+        .preview {
+
+            width: 100%;
+
+            margin: 10px 0 25px;
+
+            display: flex;
+
+            justify-content: center;
+
+        }
+
+
+        .preview img {
+
+            display: block;
+
+            width: 100%;
+
+            max-width: 600px;
+
+            max-height: 350px;
+
+            object-fit: cover;
+
+            border-radius: 12px;
+
+            border: 1px solid #33333a;
+
+        }
+
+
+        /* ================================
+           ИНФОРМАЦИЯ О ВИДЕО
+        ================================= */
+
+        #videoInfo {
+
+            margin-top: 8px;
+
+            color: #888891;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ================================
+           КНОПКА ПУБЛИКАЦИИ
+        ================================= */
+
+        #publishBtn {
+
+            display: block;
+
+            width: 100%;
+
+            height: 52px;
+
+            margin-top: 10px;
+
+            padding: 0;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #ff1744;
+
+            color: #ffffff;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+
+        }
+
+
+        #publishBtn:hover {
+
+            background: #e3133c;
+
+            transform: translateY(-1px);
+
+        }
+
+
+        #publishBtn:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* ================================
+           СТАТУС
+        ================================= */
+
+        #status {
+
+            width: 100%;
+
+            min-height: 22px;
+
+            margin: 15px 0 0;
+
+            text-align: center;
+
+            color: #cccccc;
+
+        }
+
+
+        /* ================================
+           КНОПКА НАЗАД
+        ================================= */
+
+        .back-button {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            height: 42px;
+
+            padding: 0 16px;
+
+            margin-bottom: 25px;
+
+            background: #24242a;
+
+            color: #ffffff;
+
+            border: 1px solid #35353d;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+
+        .back-button:hover {
+
+            background: #303038;
+
+        }
+
+
+        /* ================================
+           МОБИЛЬНЫЙ
+        ================================= */
+
+        @media (max-width: 600px) {
+
+            .create-page {
+
+                width: calc(100% - 20px);
+
+                margin: 20px auto;
+
+                padding: 22px 16px;
+
+            }
+
+
+            .create-page h1 {
+
+                font-size: 25px;
+
+            }
+
+
+            #publishBtn {
+
+                height: 50px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+
+        <span class="red">Y</span>
+        <span class="white">-FETISH</span>
+
+    </div>
+
+</header>
+
+
+<main class="create-page">
+
+    <!-- Назад -->
+
+    <a
+        href="../index.html"
+        class="back-button"
+    >
+        ← На главную
+    </a>
+
+
+    <h1>
+        Добавить видео
+    </h1>
+
+
+    <form id="uploadForm">
+
+
+        <!-- НАЗВАНИЕ -->
+
+        <div class="form-group">
+
+            <label for="title">
+                Название видео
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Введите название видео..."
+                maxlength="150"
+                required
+            >
+
+        </div>
+
+
+        <!-- КАТЕГОРИЯ -->
+
+        <div class="form-group">
+
+            <label for="category">
+                Категория
+            </label>
+
+            <select
+                id="category"
+                name="category"
+                required
+            >
+
+                <option value="">
+                    Выберите категорию
+                </option>
+
+                <option value="all">
+                    Все
+                </option>
+
+                <option value="bdsm">
+                    BDSM
+                </option>
+
+                <option value="cuckold">
+                    CUCKOLD
+                </option>
+
+                <option value="foot">
+                    Foot
+                </option>
+
+                <option value="cosplay">
+                    Cosplay
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ВИДЕО -->
+
+        <div class="form-group">
+
+            <label for="video">
+                Видео
+            </label>
+
+            <input
+                type="file"
+                id="video"
+                name="video"
+                accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                required
+            >
+
+            <div id="videoInfo"></div>
+
+        </div>
+
+
+        <!-- ПРЕДПРОСМОТР ВИДЕО -->
+
+        <div
+            id="videoPreview"
+            class="video-preview"
+        ></div>
+
+
+        <!-- ОБЛОЖКА -->
+
+        <div class="form-group">
+
+            <label for="cover">
+                Обложка
+            </label>
+
+            <input
+                type="file"
+                id="cover"
+                name="cover"
+                accept="image/jpeg,image/png,image/webp"
+                required
+            >
+
+        </div>
+
+
+        <!-- ПРЕДПРОСМОТР ОБЛОЖКИ -->
+
+        <div
+            id="coverPreview"
+            class="preview"
+        ></div>
+
+
+        <!-- ПУБЛИКАЦИЯ -->
+
+        <button
+            type="submit"
+            id="publishBtn"
+        >
+            Опубликовать видео
+        </button>
+
+
+        <p id="status"></p>
+
+    </form>
+
+</main>
+
+
+<footer>
+
+    © 2026 Y-FETISH
+
+</footer>
+
+
+<script>
+
+/* =========================================
+   ЭЛЕМЕНТЫ
+========================================= */
+
+const form =
+    document.getElementById("uploadForm");
+
+const titleInput =
+    document.getElementById("title");
+
+const categoryInput =
+    document.getElementById("category");
+
+const videoInput =
+    document.getElementById("video");
+
+const coverInput =
+    document.getElementById("cover");
+
+const videoPreview =
+    document.getElementById("videoPreview");
+
+const coverPreview =
+    document.getElementById("coverPreview");
+
+const videoInfo =
+    document.getElementById("videoInfo");
+
+const publishBtn =
+    document.getElementById("publishBtn");
+
+const status =
+    document.getElementById("status");
+
+
+/* =========================================
+   ПРЕДПРОСМОТР ВИДЕО
+========================================= */
+
+videoInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        videoPreview.innerHTML = "";
+
+        videoInfo.textContent = "";
+
+        if (!file) {
+            return;
+        }
+
+
+        const url =
+            URL.createObjectURL(file);
+
+
+        const video =
+            document.createElement("video");
+
+
+        video.src = url;
+
+        video.controls = true;
+
+        video.preload = "metadata";
+
+
+        videoPreview.appendChild(video);
+
+
+        const size =
+            (file.size / 1024 / 1024)
+            .toFixed(2);
+
+
+        videoInfo.textContent =
+            file.name +
+            " — " +
+            size +
+            " MB";
+
+    }
+);
+
+
+/* =========================================
+   ПРЕДПРОСМОТР ОБЛОЖКИ
+========================================= */
+
+coverInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        coverPreview.innerHTML = "";
+
+        if (!file) {
+            return;
+        }
+
+
+        const url =
+            URL.createObjectURL(file);
+
+
+        const image =
+            document.createElement("img");
+
+
+        image.src = url;
+
+        image.alt =
+            "Предпросмотр обложки";
+
+
+        coverPreview.appendChild(image);
+
+    }
+);
+
+
+/* =========================================
+   ПУБЛИКАЦИЯ
+========================================= */
+
+form.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const title =
+            titleInput.value.trim();
+
+        const category =
+            categoryInput.value;
+
+        const video =
+            videoInput.files[0];
+
+        const cover =
+            coverInput.files[0];
+
+
+        if (!title) {
+
+            status.textContent =
+                "Введите название видео.";
+
+            return;
+
+        }
+
+
+        if (!category) {
+
+            status.textContent =
+                "Выберите категорию.";
+
+            return;
+
+        }
+
+
+        if (!video) {
+
+            status.textContent =
+                "Выберите видео.";
+
+            return;
+
+        }
+
+
+        if (!cover) {
+
+            status.textContent =
+                "Выберите обложку.";
+
+            return;
+
+        }
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "title",
+            title
+        );
+
+
+        formData.append(
+            "category",
+            category
+        );
+
+
+        formData.append(
+            "video",
+            video
+        );
+
+
+        formData.append(
+            "cover",
+            cover
+        );
+
+
+        publishBtn.disabled = true;
+
+        publishBtn.textContent =
+            "Загрузка...";
+
+
+        status.textContent =
+            "Загрузка видео...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "../api/videos",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error ||
+                    "Ошибка загрузки."
+                );
+
+            }
+
+
+            status.textContent =
+                "Видео успешно опубликовано!";
+
+
+            form.reset();
+
+            videoPreview.innerHTML = "";
+
+            coverPreview.innerHTML = "";
+
+            videoInfo.textContent = "";
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "../index.html";
+
+                },
+                1000
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            status.textContent =
+                error.message ||
+                "Ошибка при публикации.";
+
+
+        } finally {
+
+            publishBtn.disabled = false;
+
+            publishBtn.textContent =
+                "Опубликовать видео";
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

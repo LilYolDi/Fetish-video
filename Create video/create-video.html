@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Добавить видео</title>
+
+    <link
+        rel="stylesheet"
+        href="../style.css"
+    >
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <span class="red">Y</span>
+        <span class="white">-FETISH</span>
+    </div>
+
+    <div class="language-box">
+
+        <select id="language">
+
+            <option value="ru">🇷🇺 RU</option>
+            <option value="ua">🇺🇦 UA</option>
+            <option value="en">🇬🇧 EN</option>
+
+        </select>
+
+    </div>
+
+</header>
+
+
+<main class="create-page">
+
+    <h1>Добавить видео</h1>
+
+
+    <form id="uploadForm">
+
+        <div class="form-group">
+
+            <label for="title">
+                Название видео
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Введите название видео..."
+                maxlength="150"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="video">
+                Выберите видео
+            </label>
+
+            <input
+                type="file"
+                id="video"
+                name="video"
+                accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                required
+            >
+
+            <p id="videoInfo"></p>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="cover">
+                Выберите обложку
+            </label>
+
+            <input
+                type="file"
+                id="cover"
+                name="cover"
+                accept="image/jpeg,image/png,image/webp"
+                required
+            >
+
+        </div>
+
+
+        <div
+            id="preview"
+            class="preview"
+        ></div>
+
+
+        <button
+            type="submit"
+            id="publishBtn"
+        >
+            Опубликовать
+        </button>
+
+
+        <p id="status"></p>
+
+    </form>
+
+
+    <br>
+
+    <a href="../index.html">
+        ← Вернуться на главную
+    </a>
+
+</main>
+
+
+<script>
+
+const form =
+    document.getElementById("uploadForm");
+
+const titleInput =
+    document.getElementById("title");
+
+const videoInput =
+    document.getElementById("video");
+
+const coverInput =
+    document.getElementById("cover");
+
+const preview =
+    document.getElementById("preview");
+
+const status =
+    document.getElementById("status");
+
+const publishBtn =
+    document.getElementById("publishBtn");
+
+const videoInfo =
+    document.getElementById("videoInfo");
+
+
+// ==============================
+// ПРЕДПРОСМОТР ОБЛОЖКИ
+// ==============================
+
+coverInput.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            preview.innerHTML = "";
+            return;
+        }
+
+        const url =
+            URL.createObjectURL(file);
+
+        preview.innerHTML = `
+            <img
+                src="${url}"
+                alt="Предпросмотр обложки"
+            >
+        `;
+
+    }
+);
+
+
+// ==============================
+// ИНФОРМАЦИЯ О ВИДЕО
+// ==============================
+
+videoInput.addEventListener(
+    "change",
+    function () {
+
+        const file =
+            this.files[0];
+
+        if (!file) {
+            videoInfo.textContent = "";
+            return;
+        }
+
+        const sizeMB =
+            (file.size / 1024 / 1024)
+            .toFixed(1);
+
+        videoInfo.textContent =
+            `Файл: ${file.name} — ${sizeMB} МБ`;
+
+    }
+);
+
+
+// ==============================
+// ПУБЛИКАЦИЯ
+// ==============================
+
+form.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const title =
+            titleInput.value.trim();
+
+        const video =
+            videoInput.files[0];
+
+        const cover =
+            coverInput.files[0];
+
+
+        if (!title) {
+
+            status.textContent =
+                "Введите название видео.";
+
+            return;
+        }
+
+
+        if (!video) {
+
+            status.textContent =
+                "Выберите видео.";
+
+            return;
+        }
+
+
+        if (!cover) {
+
+            status.textContent =
+                "Выберите обложку.";
+
+            return;
+        }
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "title",
+            title
+        );
+
+
+        formData.append(
+            "video",
+            video
+        );
+
+
+        formData.append(
+            "cover",
+            cover
+        );
+
+
+        publishBtn.disabled = true;
+
+        status.textContent =
+            "Загрузка видео...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/videos",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error ||
+                    "Ошибка загрузки."
+                );
+
+            }
+
+
+            status.textContent =
+                "Видео успешно опубликовано!";
+
+
+            form.reset();
+
+            preview.innerHTML = "";
+
+            videoInfo.textContent = "";
+
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "../index.html";
+
+                },
+                1000
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            status.textContent =
+                error.message;
+
+        } finally {
+
+            publishBtn.disabled = false;
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

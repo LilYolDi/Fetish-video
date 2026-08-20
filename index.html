@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Y-FETISH</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        <span class="red">Y</span>
+        <span class="white">-FETISH</span>
+    </div>
+
+
+    <div class="language-box">
+
+        <select id="language">
+
+            <option value="ru">🇷🇺 RU</option>
+            <option value="ua">🇺🇦 UA</option>
+            <option value="en">🇬🇧 EN</option>
+
+        </select>
+
+    </div>
+
+
+    <!-- КНОПКА ДОБАВЛЕНИЯ ВИДЕО -->
+
+    <a
+        class="add-video-button"
+        href="/Create%20Video/index.html"
+    >
+        ➕ Добавить видео
+    </a>
+
+
+    <div
+        id="menuBtn"
+        class="menu-btn"
+    >
+        ☰
+    </div>
+
+</header>
+
+
+<div class="search-box">
+
+    <input
+        type="text"
+        id="search"
+        placeholder="🔍 Поиск видео..."
+    >
+
+</div>
+
+
+<div class="categories">
+
+    <a
+        class="category-btn"
+        href="index.html"
+    >
+        Все
+    </a>
+
+    <a
+        class="category-btn"
+        href="categories/bdsm.html"
+    >
+        BDSM
+    </a>
+
+    <a
+        class="category-btn"
+        href="categories/latex.html"
+    >
+        CUCKOLD
+    </a>
+
+    <a
+        class="category-btn"
+        href="categories/foot.html"
+    >
+        Foot
+    </a>
+
+    <a
+        class="category-btn"
+        href="categories/cosplay.html"
+    >
+        Cosplay
+    </a>
+
+</div>
+
+
+<main>
+
+
+    <nav
+        id="sideMenu"
+        class="side-menu"
+    >
+
+        <div
+            id="closeBtn"
+            class="close-btn"
+        >
+            ✕
+        </div>
+
+
+        <a href="/index.html">
+            🏠 Главная
+        </a>
+
+
+        <!-- ПРАВИЛЬНЫЙ ПУТЬ -->
+
+        <a href="/Create%20Video/index.html">
+            ➕ Добавить видео
+        </a>
+
+
+        <a href="#">
+            👤 Профиль
+        </a>
+
+    </nav>
+
+
+    <div id="overlay"></div>
+
+
+    <h2>
+        Новые видео
+    </h2>
+
+
+    <!-- СЮДА БУДУТ ДОБАВЛЯТЬСЯ ОПУБЛИКОВАННЫЕ ВИДЕО -->
+
+    <div
+        class="videos"
+        id="videos"
+    ></div>
+
+
+</main>
+
+
+<script>
+
+/* =====================================
+   ЗАГРУЗКА ОПУБЛИКОВАННЫХ ВИДЕО
+===================================== */
+
+async function loadVideos() {
+
+    const container =
+        document.getElementById("videos");
+
+
+    try {
+
+        const response =
+            await fetch("/api/videos");
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Ошибка загрузки списка видео"
+            );
+
+        }
+
+
+        const videos =
+            await response.json();
+
+
+        container.innerHTML = "";
+
+
+        if (
+            !Array.isArray(videos) ||
+            videos.length === 0
+        ) {
+
+            container.innerHTML = `
+                <p class="no-videos">
+                    Пока нет опубликованных видео.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        videos.forEach(video => {
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "card";
+
+
+            card.dataset.title =
+                video.title;
+
+
+            card.innerHTML = `
+
+                <video
+                    controls
+                    preload="metadata"
+                    poster="${video.cover}"
+                >
+
+                    <source
+                        src="${video.video}"
+                        type="video/mp4"
+                    >
+
+                    Ваш браузер
+                    не поддерживает видео.
+
+                </video>
+
+                <p>
+                    ${escapeHTML(video.title)}
+                </p>
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+
+        setupVideoControls();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        container.innerHTML = `
+            <p>
+                Не удалось загрузить видео.
+            </p>
+        `;
+
+    }
+
+}
+
+
+/* =====================================
+   ЗАЩИТА НАЗВАНИЯ ОТ HTML
+===================================== */
+
+function escapeHTML(text) {
+
+    const element =
+        document.createElement("div");
+
+    element.textContent =
+        text || "";
+
+
+    return element.innerHTML;
+
+}
+
+
+/* =====================================
+   УПРАВЛЕНИЕ ВИДЕО
+===================================== */
+
+function setupVideoControls() {
+
+    const videos =
+        document.querySelectorAll(
+            "#videos video"
+        );
+
+
+    videos.forEach(video => {
+
+        video.addEventListener(
+            "play",
+            () => {
+
+                videos.forEach(other => {
+
+                    if (other !== video) {
+
+                        other.pause();
+
+                    }
+
+                });
+
+            }
+        );
+
+
+        video.addEventListener(
+            "dblclick",
+            () => {
+
+                if (
+                    video.requestFullscreen
+                ) {
+
+                    video.requestFullscreen();
+
+                }
+
+            }
+        );
+
+    });
+
+}
+
+
+/* =====================================
+   ПОИСК
+===================================== */
+
+const search =
+    document.getElementById("search");
+
+
+if (search) {
+
+    search.addEventListener(
+        "input",
+        function () {
+
+            const value =
+                this.value
+                .toLowerCase()
+                .trim();
+
+
+            document
+                .querySelectorAll(".card")
+                .forEach(card => {
+
+                    const title =
+                        (
+                            card.dataset.title ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    if (
+                        title.includes(value)
+                    ) {
+
+                        card.style.display =
+                            "";
+
+                    } else {
+
+                        card.style.display =
+                            "none";
+
+                    }
+
+                });
+
+        }
+    );
+
+}
+
+
+/* =====================================
+   ЗАГРУЗИТЬ ВИДЕО ПРИ ОТКРЫТИИ
+===================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadVideos
+);
+
+</script>
+
+
+<!-- ТВОЙ ОСНОВНОЙ SCRIPT.JS -->
+
+<script src="script.js"></script>
+
+
+<footer>
+
+    © 2026 Y-FETISH
+
+</footer>
+
+
+</body>
+
+</html>
