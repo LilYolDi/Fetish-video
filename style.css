@@ -4,8 +4,10 @@
     box-sizing: border-box;
 }
 
+
 html,
 body {
+
     width: 100%;
     height: 100%;
 
@@ -22,9 +24,9 @@ body {
 }
 
 
-/* =========================
+/* =====================================
    HEADER
-========================= */
+===================================== */
 
 header {
 
@@ -34,7 +36,6 @@ header {
     left: 0;
 
     width: 100%;
-
     height: 60px;
 
     display: flex;
@@ -43,7 +44,7 @@ header {
 
     padding: 0 20px;
 
-    background: rgba(15,15,15,.95);
+    background: rgba(15, 15, 15, 0.96);
 
     border-bottom: 2px solid #ff0000;
 
@@ -56,6 +57,8 @@ header {
     font-size: 30px;
 
     font-weight: bold;
+
+    letter-spacing: -1px;
 }
 
 
@@ -69,13 +72,21 @@ header {
 }
 
 
-.language-box {
+.header-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
 
     margin-left: auto;
-
-    margin-right: 12px;
 }
 
+
+/* =====================================
+   LANGUAGE
+===================================== */
 
 .language-box select {
 
@@ -92,8 +103,16 @@ header {
     border-radius: 8px;
 
     outline: none;
+
+    cursor: pointer;
+
+    font-size: 14px;
 }
 
+
+/* =====================================
+   MENU
+===================================== */
 
 .menu-btn {
 
@@ -103,35 +122,41 @@ header {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     font-size: 30px;
 
+    color: #fff;
+
     cursor: pointer;
+
+    user-select: none;
 }
 
 
-/* =========================
-   ВИДЕО ЛЕНТА
-========================= */
+/* =====================================
+   MAIN
+===================================== */
 
 main {
 
     width: 100%;
-
     height: 100vh;
+
+    background: #000;
 }
 
+
+/* =====================================
+   TIKTOK ЛЕНТА
+===================================== */
 
 .videos {
 
     width: 100%;
-
     height: 100vh;
 
     overflow-y: auto;
-
     overflow-x: hidden;
 
     scroll-snap-type: y mandatory;
@@ -139,6 +164,8 @@ main {
     scroll-behavior: smooth;
 
     scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 
@@ -147,23 +174,26 @@ main {
 }
 
 
-/* =========================
-   КАЖДОЕ ВИДЕО
-========================= */
+/* =====================================
+   ВИДЕО-КАРТОЧКА
+===================================== */
 
 .video-card {
 
     position: relative;
 
     width: 100%;
-
     height: 100vh;
+
+    min-height: 100vh;
+
+    background: #000;
 
     scroll-snap-align: start;
 
     scroll-snap-stop: always;
 
-    background: #000;
+    overflow: hidden;
 
     display: flex;
 
@@ -173,44 +203,167 @@ main {
 }
 
 
+/* =====================================
+   VIDEO
+===================================== */
+
 .video-card video {
 
     width: 100%;
-
     height: 100%;
 
     object-fit: contain;
 
     background: #000;
+
+    display: block;
+
+    cursor: pointer;
 }
 
 
-/* =========================
+/* =====================================
+   НИЖНИЙ ГРАДИЕНТ
+===================================== */
+
+.video-overlay {
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 35%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0, 0, 0, 0.9)
+        );
+
+    pointer-events: none;
+
+    z-index: 2;
+}
+
+
+/* =====================================
    НАЗВАНИЕ
-========================= */
+===================================== */
 
 .video-title {
 
     position: absolute;
 
     left: 20px;
+    right: 80px;
 
-    bottom: 25px;
+    bottom: 28px;
 
-    color: #fff;
+    z-index: 5;
 
     font-size: 18px;
 
     font-weight: bold;
 
+    color: #fff;
+
     text-shadow:
-        0 2px 6px #000;
+        0 2px 6px #000,
+        0 0 10px #000;
 }
 
 
-/* =========================
+/* =====================================
+   КНОПКА ЗВУКА
+===================================== */
+
+.sound-button {
+
+    position: absolute;
+
+    right: 20px;
+    bottom: 20px;
+
+    width: 50px;
+    height: 50px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    color: #fff;
+
+    font-size: 21px;
+
+    cursor: pointer;
+
+    z-index: 10;
+
+    transition: 0.2s;
+}
+
+
+.sound-button:hover {
+
+    background: #ff0000;
+
+}
+
+
+/* =====================================
+   PLAY ICON
+===================================== */
+
+.play-icon {
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    color: #fff;
+
+    font-size: 25px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 6;
+
+    transition: opacity 0.2s;
+}
+
+
+.video-card.paused .play-icon {
+
+    opacity: 1;
+}
+
+
+/* =====================================
    БОКОВОЕ МЕНЮ
-========================= */
+===================================== */
 
 .side-menu {
 
@@ -230,9 +383,15 @@ main {
 
     z-index: 3000;
 
-    transition: .3s;
-
     padding-top: 15px;
+
+    box-shadow:
+        -5px 0 25px rgba(0,0,0,.7);
+
+    transition:
+        right 0.3s ease;
+
+    overflow-y: auto;
 }
 
 
@@ -249,7 +408,8 @@ main {
 
     text-align: right;
 
-    padding: 5px 20px 20px;
+    padding:
+        5px 20px 20px;
 
     cursor: pointer;
 }
@@ -265,18 +425,24 @@ main {
 
     text-decoration: none;
 
+    font-size: 16px;
+
     border-bottom: 1px solid #333;
+
+    transition: 0.2s;
 }
 
 
 .side-menu a:hover {
+
     background: #ff0000;
+
 }
 
 
-/* =========================
-   OVERLAY
-========================= */
+/* =====================================
+   ЗАТЕМНЕНИЕ
+===================================== */
 
 #overlay {
 
@@ -284,7 +450,8 @@ main {
 
     inset: 0;
 
-    background: rgba(0,0,0,.7);
+    background:
+        rgba(0,0,0,.7);
 
     z-index: 2500;
 
@@ -292,7 +459,11 @@ main {
 
     visibility: hidden;
 
-    transition: .25s;
+    pointer-events: none;
+
+    transition:
+        opacity .25s ease,
+        visibility .25s ease;
 }
 
 
@@ -301,12 +472,19 @@ main {
     opacity: 1;
 
     visibility: visible;
+
+    pointer-events: auto;
 }
 
 
-/* =========================
+body.menu-open {
+    overflow: hidden;
+}
+
+
+/* =====================================
    ТЕЛЕФОН
-========================= */
+===================================== */
 
 @media (max-width: 700px) {
 
@@ -319,6 +497,7 @@ main {
 
 
     .logo {
+
         font-size: 22px;
     }
 
@@ -327,16 +506,15 @@ main {
 
         height: 35px;
 
-        font-size: 12px;
-
         padding: 0 6px;
+
+        font-size: 12px;
     }
 
 
     .menu-btn {
 
         width: 38px;
-
         height: 38px;
 
         font-size: 27px;
@@ -346,13 +524,14 @@ main {
     .video-card {
 
         height: 100dvh;
+
+        min-height: 100dvh;
     }
 
 
     .video-card video {
 
         width: 100%;
-
         height: 100%;
 
         object-fit: contain;
@@ -363,10 +542,56 @@ main {
 
         left: 12px;
 
+        right: 65px;
+
         bottom: 20px;
 
         font-size: 15px;
     }
 
+
+    .sound-button {
+
+        right: 12px;
+
+        bottom: 16px;
+
+        width: 43px;
+        height: 43px;
+
+        font-size: 18px;
+    }
+
+
+    .play-icon {
+
+        width: 60px;
+        height: 60px;
+
+        font-size: 21px;
+    }
+
 }
 
+
+/* =====================================
+   МАЛЕНЬКИЙ ТЕЛЕФОН
+===================================== */
+
+@media (max-width: 400px) {
+
+    .logo {
+        font-size: 19px;
+    }
+
+
+    .language-box select {
+        font-size: 11px;
+    }
+
+
+    .video-title {
+        font-size: 14px;
+    }
+
+}
