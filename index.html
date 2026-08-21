@@ -2,26 +2,24 @@
 <html lang="ru">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <title>Y-FETISH</title>
+    <title>Y-FETISH — Видео</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
+    <meta
+        name="description"
+        content="Y-FETISH — видео"
     >
 
+    <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -29,115 +27,176 @@
         <span class="red">Y</span><span class="white">-FETISH</span>
     </div>
 
+    <div class="header-right">
 
-    <div class="language-box">
+        <div class="language-box">
+            <select id="language">
+                <option value="ru">🇷🇺 RU</option>
+                <option value="ua">🇺🇦 UA</option>
+                <option value="en">🇬🇧 EN</option>
+            </select>
+        </div>
 
-        <select id="language">
+        <div
+            id="menuBtn"
+            class="menu-btn"
+            aria-label="Меню"
+        >
+            ☰
+        </div>
 
-            <option value="ru">🇷🇺 RU</option>
-            <option value="ua">🇺🇦 UA</option>
-            <option value="en">🇬🇧 EN</option>
-
-        </select>
-
-    </div>
-
-
-    <div
-        id="menuBtn"
-        class="menu-btn"
-    >
-        ☰
     </div>
 
 </header>
 
 
 <!-- =========================
-     ВИДЕО
-     ПРОПИСЫВАЕМ ПУТИ ЗДЕСЬ
+     ЛЕНТА ВИДЕО
 ========================= -->
 
 <main>
 
-    <div class="videos">
-
+    <div
+        class="videos"
+        id="videos"
+    >
 
         <!-- ВИДЕО 1 -->
 
-        <div class="video-card">
+        <article class="video-card">
 
             <video
                 src="videos/video1.mp4"
                 playsinline
-                loop
                 muted
-                controls
+                loop
+                preload="metadata"
             ></video>
+
+            <div class="video-overlay"></div>
 
             <div class="video-title">
                 Видео 1
             </div>
 
-        </div>
+            <button
+                class="sound-button"
+                type="button"
+            >
+                🔇
+            </button>
+
+            <div class="play-icon">
+                ▶
+            </div>
+
+        </article>
 
 
         <!-- ВИДЕО 2 -->
 
-        <div class="video-card">
+        <article class="video-card">
 
             <video
                 src="videos/video2.mp4"
                 playsinline
-                loop
                 muted
-                controls
+                loop
+                preload="metadata"
             ></video>
+
+            <div class="video-overlay"></div>
 
             <div class="video-title">
                 Видео 2
             </div>
 
-        </div>
+            <button
+                class="sound-button"
+                type="button"
+            >
+                🔇
+            </button>
+
+            <div class="play-icon">
+                ▶
+            </div>
+
+        </article>
 
 
         <!-- ВИДЕО 3 -->
 
-        <div class="video-card">
+        <article class="video-card">
 
             <video
                 src="videos/video3.mp4"
                 playsinline
-                loop
                 muted
-                controls
+                loop
+                preload="metadata"
             ></video>
+
+            <div class="video-overlay"></div>
 
             <div class="video-title">
                 Видео 3
             </div>
 
-        </div>
+            <button
+                class="sound-button"
+                type="button"
+            >
+                🔇
+            </button>
+
+            <div class="play-icon">
+                ▶
+            </div>
+
+        </article>
 
 
-        <!-- ВИДЕО 4 -->
+        <!--
+        ================================
+        ДОБАВИТЬ ЕЩЁ ОДНО ВИДЕО
 
-        <div class="video-card">
+        1. Положи файл:
+           videos/video4.mp4
+
+        2. Скопируй этот блок:
+
+        <article class="video-card">
 
             <video
                 src="videos/video4.mp4"
                 playsinline
-                loop
                 muted
-                controls
+                loop
+                preload="metadata"
             ></video>
+
+            <div class="video-overlay"></div>
 
             <div class="video-title">
                 Видео 4
             </div>
 
-        </div>
+            <button
+                class="sound-button"
+                type="button"
+            >
+                🔇
+            </button>
 
+            <div class="play-icon">
+                ▶
+            </div>
+
+        </article>
+
+        ================================
+        -->
 
     </div>
 
@@ -160,11 +219,9 @@
         ✕
     </div>
 
-
     <a href="/index.html">
         🏠 Главная
     </a>
-
 
     <a href="#">
         👤 Профиль
@@ -176,137 +233,7 @@
 <div id="overlay"></div>
 
 
-<script>
-
-const menuBtn =
-    document.getElementById("menuBtn");
-
-const closeBtn =
-    document.getElementById("closeBtn");
-
-const sideMenu =
-    document.getElementById("sideMenu");
-
-const overlay =
-    document.getElementById("overlay");
-
-
-/* =========================
-   МЕНЮ
-========================= */
-
-menuBtn.onclick = function () {
-
-    sideMenu.classList.add("active");
-
-    overlay.classList.add("active");
-
-};
-
-
-closeBtn.onclick = function () {
-
-    sideMenu.classList.remove("active");
-
-    overlay.classList.remove("active");
-
-};
-
-
-overlay.onclick = function () {
-
-    sideMenu.classList.remove("active");
-
-    overlay.classList.remove("active");
-
-};
-
-
-/* =========================
-   АВТОПРОИГРЫВАНИЕ
-========================= */
-
-const videos =
-    document.querySelectorAll(
-        ".video-card video"
-    );
-
-
-const observer =
-    new IntersectionObserver(
-
-        entries => {
-
-            entries.forEach(entry => {
-
-                const video =
-                    entry.target;
-
-
-                if (entry.isIntersecting) {
-
-                    videos.forEach(other => {
-
-                        if (other !== video) {
-
-                            other.pause();
-
-                        }
-
-                    });
-
-
-                    video.play()
-                        .catch(() => {});
-
-                } else {
-
-                    video.pause();
-
-                }
-
-            });
-
-        },
-
-        {
-            threshold: 0.7
-        }
-
-    );
-
-
-videos.forEach(video => {
-
-    observer.observe(video);
-
-});
-
-
-/* =========================
-   ЗВУК
-========================= */
-
-videos.forEach(video => {
-
-    video.addEventListener(
-        "click",
-        function () {
-
-            if (this.muted) {
-
-                this.muted = false;
-
-            }
-
-        }
-    );
-
-});
-
-</script>
-
+<script src="script.js"></script>
 
 </body>
-
 </html>
