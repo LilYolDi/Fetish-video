@@ -1,290 +1,408 @@
-const menuBtn = document.getElementById("menuBtn");
-const closeBtn = document.getElementById("closeBtn");
-const sideMenu = document.getElementById("sideMenu");
-const overlay = document.getElementById("overlay");
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
 
-// ==============================
-// МЕНЮ
-// ==============================
+        /* =====================================
+           ВИДЕО
+        ===================================== */
 
-if (menuBtn) {
-    menuBtn.addEventListener("click", () => {
-        sideMenu.classList.add("active");
-        overlay.classList.add("active");
-        document.body.style.overflow = "hidden";
-    });
-}
+        const videos =
+            document.querySelectorAll(
+                ".video-card video"
+            );
 
 
-function closeMenu() {
+        /* =====================================
+           АВТОПРОИГРЫВАНИЕ
+        ===================================== */
 
-    if (sideMenu) {
-        sideMenu.classList.remove("active");
-    }
-
-    if (overlay) {
-        overlay.classList.remove("active");
-    }
-
-    document.body.style.overflow = "auto";
-}
+        const videoContainer =
+            document.getElementById("videos");
 
 
-if (closeBtn) {
-    closeBtn.addEventListener("click", closeMenu);
-}
+        const observer =
+            new IntersectionObserver(
+
+                function (entries) {
+
+                    entries.forEach(
+                        function (entry) {
+
+                            const video =
+                                entry.target;
+
+                            const card =
+                                video.closest(
+                                    ".video-card"
+                                );
 
 
-if (overlay) {
-    overlay.addEventListener("click", closeMenu);
-}
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                /*
+                                 Останавливаем
+                                 остальные видео
+                                */
+
+                                videos.forEach(
+                                    function (other) {
+
+                                        if (
+                                            other !== video
+                                        ) {
+
+                                            other.pause();
+
+                                            other
+                                                .closest(
+                                                    ".video-card"
+                                                )
+                                                .classList
+                                                .remove(
+                                                    "paused"
+                                                );
+
+                                        }
+
+                                    }
+                                );
 
 
-document.addEventListener("keydown", (event) => {
+                                /*
+                                 Запускаем
+                                 текущее видео
+                                */
 
-    if (event.key === "Escape") {
-        closeMenu();
-    }
+                                video.muted = true;
 
-});
+                                video.play()
+                                    .then(
+                                        function () {
 
+                                            card.classList
+                                                .remove(
+                                                    "paused"
+                                                );
 
-// ==============================
-// ПОИСК
-// ==============================
+                                        }
+                                    )
+                                    .catch(
+                                        function () {
 
-const search = document.getElementById("search");
+                                            card.classList
+                                                .add(
+                                                    "paused"
+                                                );
 
+                                        }
+                                    );
 
-if (search) {
+                            } else {
 
-    search.addEventListener("input", function () {
+                                video.pause();
 
-        const value =
-            this.value.trim().toLowerCase();
+                                card.classList
+                                    .remove(
+                                        "paused"
+                                    );
 
+                            }
 
-        const cards =
-            document.querySelectorAll(".card");
+                        }
+                    );
 
+                },
 
-        cards.forEach(card => {
+                {
+                    root:
+                        videoContainer,
 
-            const title =
-                (card.dataset.title || "")
-                .toLowerCase();
+                    threshold:
+                        0.7
+                }
 
-
-            if (title.includes(value)) {
-
-                card.style.display = "";
-
-            } else {
-
-                card.style.display = "none";
-
-            }
-
-        });
-
-    });
-
-}
-
-
-// ==============================
-// ВИДЕО
-// ==============================
-
-function setupVideos() {
-
-    const videos =
-        document.querySelectorAll("video");
+            );
 
 
-    videos.forEach(video => {
+        videos.forEach(
+            function (video) {
 
-        // Остановить остальные видео
-        video.addEventListener("play", () => {
-
-            document
-                .querySelectorAll("video")
-                .forEach(otherVideo => {
-
-                    if (otherVideo !== video) {
-                        otherVideo.pause();
-                    }
-
-                });
-
-        });
-
-
-        // Двойной клик — полный экран
-        video.addEventListener("dblclick", () => {
-
-            if (video.requestFullscreen) {
-
-                video.requestFullscreen();
-
-            } else if (video.webkitRequestFullscreen) {
-
-                video.webkitRequestFullscreen();
-
-            } else if (video.msRequestFullscreen) {
-
-                video.msRequestFullscreen();
+                observer.observe(video);
 
             }
-
-        });
-
-    });
-
-}
-
-
-// Запускаем для уже существующих видео
-setupVideos();
-
-
-// ==============================
-// ЯЗЫК
-// ==============================
-
-const lang =
-    document.getElementById("language");
-
-
-const text = {
-
-    ru: {
-        home: "Главная",
-        add: "Добавить видео",
-        profile: "Профиль",
-        newvideo: "Новые видео"
-    },
-
-    ua: {
-        home: "Головна",
-        add: "Додати відео",
-        profile: "Профіль",
-        newvideo: "Нові відео"
-    },
-
-    en: {
-        home: "Home",
-        add: "Add video",
-        profile: "Profile",
-        newvideo: "New Videos"
-    }
-
-};
-
-
-if (lang) {
-
-    lang.addEventListener("change", function () {
-
-        const current =
-            text[this.value];
-
-
-        const menuLinks =
-            document.querySelectorAll(".side-menu a");
-
-
-        if (menuLinks[0]) {
-            menuLinks[0].textContent =
-                current.home;
-        }
-
-
-        if (menuLinks[1]) {
-            menuLinks[1].textContent =
-                current.add;
-        }
-
-
-        if (menuLinks[2]) {
-            menuLinks[2].textContent =
-                current.profile;
-        }
-
-
-        const heading =
-            document.querySelector("h2");
-
-
-        if (heading) {
-            heading.textContent =
-                current.newvideo;
-        }
-
-    });
-
-}
-
-
-
-
-
-
-
-
-
-
-const videosContainer = document.getElementById("videos");
-
-async function loadVideos() {
-
-    try {
-
-        const response = await fetch("/api/videos");
-
-        const videos = await response.json();
-
-        videosContainer.innerHTML = "";
-
-        videos.forEach(video => {
-
-            const card = document.createElement("div");
-
-            card.className = "card";
-
-            card.dataset.title = video.title;
-
-            card.dataset.category = video.category || "";
-
-            card.innerHTML = `
-                <video
-                    controls
-                    preload="metadata"
-                    poster="${video.cover}"
-                >
-                    <source
-                        src="${video.video}"
-                        type="video/mp4"
-                    >
-                </video>
-
-                <p>${video.title}</p>
-            `;
-
-            videosContainer.appendChild(card);
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Ошибка загрузки видео:",
-            error
         );
 
+
+        /* =====================================
+           НАЖАТИЕ НА ВИДЕО
+        ===================================== */
+
+        videos.forEach(
+            function (video) {
+
+                video.addEventListener(
+                    "click",
+                    function () {
+
+                        const card =
+                            video.closest(
+                                ".video-card"
+                            );
+
+
+                        if (video.paused) {
+
+                            video.play()
+                                .catch(
+                                    function () {}
+                                );
+
+                            card.classList
+                                .remove(
+                                    "paused"
+                                );
+
+                        } else {
+
+                            video.pause();
+
+                            card.classList
+                                .add(
+                                    "paused"
+                                );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =====================================
+           КНОПКИ ЗВУКА
+        ===================================== */
+
+        const soundButtons =
+            document.querySelectorAll(
+                ".sound-button"
+            );
+
+
+        soundButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+
+                        const card =
+                            button.closest(
+                                ".video-card"
+                            );
+
+
+                        const video =
+                            card.querySelector(
+                                "video"
+                            );
+
+
+                        video.muted =
+                            !video.muted;
+
+
+                        if (video.muted) {
+
+                            button.textContent =
+                                "🔇";
+
+                        } else {
+
+                            button.textContent =
+                                "🔊";
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =====================================
+           МЕНЮ
+        ===================================== */
+
+        const menuBtn =
+            document.getElementById(
+                "menuBtn"
+            );
+
+
+        const closeBtn =
+            document.getElementById(
+                "closeBtn"
+            );
+
+
+        const sideMenu =
+            document.getElementById(
+                "sideMenu"
+            );
+
+
+        const overlay =
+            document.getElementById(
+                "overlay"
+            );
+
+
+        function openMenu() {
+
+            sideMenu.classList.add(
+                "active"
+            );
+
+            overlay.classList.add(
+                "active"
+            );
+
+            document.body.classList.add(
+                "menu-open"
+            );
+
+        }
+
+
+        function closeMenu() {
+
+            sideMenu.classList.remove(
+                "active"
+            );
+
+            overlay.classList.remove(
+                "active"
+            );
+
+            document.body.classList.remove(
+                "menu-open"
+            );
+
+        }
+
+
+        menuBtn.addEventListener(
+            "click",
+            openMenu
+        );
+
+
+        closeBtn.addEventListener(
+            "click",
+            closeMenu
+        );
+
+
+        overlay.addEventListener(
+            "click",
+            closeMenu
+        );
+
+
+        /* =====================================
+           ЗАКРЫТИЕ МЕНЮ ESC
+        ===================================== */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeMenu();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================
+           СВАЙП
+        ===================================== */
+
+        let touchStartY = 0;
+
+        let touchEndY = 0;
+
+
+        videoContainer.addEventListener(
+            "touchstart",
+            function (event) {
+
+                touchStartY =
+                    event.touches[0].clientY;
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
+        videoContainer.addEventListener(
+            "touchend",
+            function (event) {
+
+                touchEndY =
+                    event.changedTouches[0].clientY;
+
+
+                const difference =
+                    touchStartY -
+                    touchEndY;
+
+
+                /*
+                 Маленькое движение
+                 не считаем свайпом
+                */
+
+                if (
+                    Math.abs(difference) < 60
+                ) {
+
+                    return;
+
+                }
+
+
+                /*
+                 Сам scroll-snap
+                 браузера уже листает
+                 видео.
+
+                 Здесь ничего дополнительно
+                 прокручивать не нужно.
+                */
+
+            },
+            {
+                passive: true
+            }
+        );
+
+
     }
-
-}
-
-loadVideos();
+);
