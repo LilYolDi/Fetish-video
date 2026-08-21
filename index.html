@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Y-FETISH — Видео</title>
+    <title>Y-FETISH</title>
 
-    <meta
-        name="description"
-        content="Y-FETISH — видео, категории и новые публикации."
+    <link
+        rel="stylesheet"
+        href="style.css"
     >
 
-    <link rel="stylesheet" href="style.css">
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -26,92 +29,124 @@
         <span class="red">Y</span><span class="white">-FETISH</span>
     </div>
 
-    <div class="header-right">
 
-        <div class="language-box">
-            <select id="language">
-                <option value="ru">🇷🇺 RU</option>
-                <option value="ua">🇺🇦 UA</option>
-                <option value="en">🇬🇧 EN</option>
-            </select>
-        </div>
+    <div class="language-box">
 
-        <a
-            class="add-video-button"
-            href="/Create%20video/index.html"
-        >
-            ➕ Добавить видео
-        </a>
+        <select id="language">
 
-        <div
-            id="menuBtn"
-            class="menu-btn"
-        >
-            ☰
-        </div>
+            <option value="ru">🇷🇺 RU</option>
+            <option value="ua">🇺🇦 UA</option>
+            <option value="en">🇬🇧 EN</option>
 
+        </select>
+
+    </div>
+
+
+    <div
+        id="menuBtn"
+        class="menu-btn"
+    >
+        ☰
     </div>
 
 </header>
 
 
-<!-- ПОИСК -->
+<!-- =========================
+     ВИДЕО
+     ПРОПИСЫВАЕМ ПУТИ ЗДЕСЬ
+========================= -->
 
-<div class="search-box">
+<main>
 
-    <input
-        type="text"
-        id="search"
-        placeholder="🔍 Поиск видео..."
-        autocomplete="off"
-    >
-
-</div>
+    <div class="videos">
 
 
-<!-- КАТЕГОРИИ -->
+        <!-- ВИДЕО 1 -->
 
-<div class="categories">
+        <div class="video-card">
 
-    <a
-        class="category-btn active"
-        href="index.html"
-    >
-        Все
-    </a>
+            <video
+                src="videos/video1.mp4"
+                playsinline
+                loop
+                muted
+                controls
+            ></video>
 
-    <a
-        class="category-btn"
-        href="categories/bdsm.html"
-    >
-        BDSM
-    </a>
+            <div class="video-title">
+                Видео 1
+            </div>
 
-    <a
-        class="category-btn"
-        href="categories/latex.html"
-    >
-        CUCKOLD
-    </a>
-
-    <a
-        class="category-btn"
-        href="categories/foot.html"
-    >
-        Foot
-    </a>
-
-    <a
-        class="category-btn"
-        href="categories/cosplay.html"
-    >
-        Cosplay
-    </a>
-
-</div>
+        </div>
 
 
-<!-- БОКОВОЕ МЕНЮ -->
+        <!-- ВИДЕО 2 -->
+
+        <div class="video-card">
+
+            <video
+                src="videos/video2.mp4"
+                playsinline
+                loop
+                muted
+                controls
+            ></video>
+
+            <div class="video-title">
+                Видео 2
+            </div>
+
+        </div>
+
+
+        <!-- ВИДЕО 3 -->
+
+        <div class="video-card">
+
+            <video
+                src="videos/video3.mp4"
+                playsinline
+                loop
+                muted
+                controls
+            ></video>
+
+            <div class="video-title">
+                Видео 3
+            </div>
+
+        </div>
+
+
+        <!-- ВИДЕО 4 -->
+
+        <div class="video-card">
+
+            <video
+                src="videos/video4.mp4"
+                playsinline
+                loop
+                muted
+                controls
+            ></video>
+
+            <div class="video-title">
+                Видео 4
+            </div>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+<!-- =========================
+     БОКОВОЕ МЕНЮ
+========================= -->
 
 <nav
     id="sideMenu"
@@ -125,13 +160,11 @@
         ✕
     </div>
 
+
     <a href="/index.html">
         🏠 Главная
     </a>
 
-    <a href="/Create%20video/index.html">
-        ➕ Добавить видео
-    </a>
 
     <a href="#">
         👤 Профиль
@@ -143,449 +176,7 @@
 <div id="overlay"></div>
 
 
-<!-- ВИДЕО -->
-
-<main>
-
-    <div
-        id="videos"
-        class="videos"
-    ></div>
-
-</main>
-
-
 <script>
-
-let videosList = [];
-let currentIndex = 0;
-
-let touchStartY = 0;
-let touchEndY = 0;
-
-
-/* =====================================
-   ЗАГРУЗКА ВИДЕО
-===================================== */
-
-async function loadVideos() {
-
-    const container =
-        document.getElementById("videos");
-
-    try {
-
-        const response =
-            await fetch("/api/videos");
-
-        if (!response.ok) {
-            throw new Error("Ошибка загрузки видео");
-        }
-
-        videosList =
-            await response.json();
-
-        container.innerHTML = "";
-
-
-        if (
-            !Array.isArray(videosList) ||
-            videosList.length === 0
-        ) {
-
-            container.innerHTML = `
-                <div class="no-videos">
-                    Пока нет опубликованных видео.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        videosList.forEach((video, index) => {
-
-            const card =
-                document.createElement("article");
-
-            card.className = "card";
-
-            card.dataset.title =
-                video.title || "";
-
-
-            card.innerHTML = `
-
-                <video
-                    class="feed-video"
-                    playsinline
-                    loop
-                    muted
-                    preload="metadata"
-                    poster="${video.cover || ""}"
-                >
-
-                    <source
-                        src="${video.video}"
-                        type="video/mp4"
-                    >
-
-                    Ваш браузер
-                    не поддерживает видео.
-
-                </video>
-
-                <div class="video-gradient"></div>
-
-                <div class="video-info">
-
-                    <div class="video-title">
-                        ${escapeHTML(video.title || "Без названия")}
-                    </div>
-
-                </div>
-
-                <button
-                    class="sound-button"
-                    type="button"
-                    aria-label="Звук"
-                >
-                    🔇
-                </button>
-
-            `;
-
-
-            container.appendChild(card);
-
-        });
-
-
-        setupVideoObserver();
-        setupVideoClicks();
-        setupSoundButtons();
-        setupTouch();
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML = `
-            <div class="no-videos">
-                Не удалось загрузить видео.
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* =====================================
-   ЗАЩИТА HTML
-===================================== */
-
-function escapeHTML(text) {
-
-    const element =
-        document.createElement("div");
-
-    element.textContent =
-        text || "";
-
-    return element.innerHTML;
-}
-
-
-/* =====================================
-   АВТОПРОИГРЫВАНИЕ
-===================================== */
-
-function setupVideoObserver() {
-
-    const container =
-        document.getElementById("videos");
-
-    const videos =
-        document.querySelectorAll(".feed-video");
-
-
-    const observer =
-        new IntersectionObserver(
-
-            entries => {
-
-                entries.forEach(entry => {
-
-                    const video =
-                        entry.target;
-
-
-                    if (entry.isIntersecting) {
-
-                        videos.forEach(other => {
-
-                            if (other !== video) {
-                                other.pause();
-                            }
-
-                        });
-
-
-                        video.play()
-                            .catch(() => {});
-
-
-                        currentIndex =
-                            [...videos]
-                            .indexOf(video);
-
-                    } else {
-
-                        video.pause();
-
-                    }
-
-                });
-
-            },
-
-            {
-                root: container,
-                threshold: 0.75
-            }
-
-        );
-
-
-    videos.forEach(video => {
-
-        observer.observe(video);
-
-    });
-
-}
-
-
-/* =====================================
-   НАЖАТИЕ НА ВИДЕО
-===================================== */
-
-function setupVideoClicks() {
-
-    const videos =
-        document.querySelectorAll(".feed-video");
-
-
-    videos.forEach(video => {
-
-        video.addEventListener(
-            "click",
-            () => {
-
-                if (video.paused) {
-
-                    video.play()
-                        .catch(() => {});
-
-                } else {
-
-                    video.pause();
-
-                }
-
-            }
-        );
-
-    });
-
-}
-
-
-/* =====================================
-   ЗВУК
-===================================== */
-
-function setupSoundButtons() {
-
-    const buttons =
-        document.querySelectorAll(".sound-button");
-
-
-    buttons.forEach(button => {
-
-        button.addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
-
-
-                const card =
-                    button.closest(".card");
-
-                const video =
-                    card.querySelector("video");
-
-
-                video.muted =
-                    !video.muted;
-
-
-                button.textContent =
-                    video.muted
-                        ? "🔇"
-                        : "🔊";
-
-            }
-        );
-
-    });
-
-}
-
-
-/* =====================================
-   СВАЙП
-===================================== */
-
-function setupTouch() {
-
-    const container =
-        document.getElementById("videos");
-
-
-    container.addEventListener(
-        "touchstart",
-        event => {
-
-            touchStartY =
-                event.touches[0].clientY;
-
-        },
-        {
-            passive: true
-        }
-    );
-
-
-    container.addEventListener(
-        "touchend",
-        event => {
-
-            touchEndY =
-                event.changedTouches[0].clientY;
-
-            handleSwipe();
-
-        },
-        {
-            passive: true
-        }
-    );
-
-}
-
-
-function handleSwipe() {
-
-    const difference =
-        touchStartY - touchEndY;
-
-
-    if (Math.abs(difference) < 60) {
-        return;
-    }
-
-
-    const cards =
-        document.querySelectorAll(".card");
-
-
-    if (difference > 0) {
-
-        /* ВВЕРХ */
-
-        currentIndex =
-            Math.min(
-                currentIndex + 1,
-                cards.length - 1
-            );
-
-    } else {
-
-        /* ВНИЗ */
-
-        currentIndex =
-            Math.max(
-                currentIndex - 1,
-                0
-            );
-
-    }
-
-
-    if (cards[currentIndex]) {
-
-        cards[currentIndex].scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }
-
-}
-
-
-/* =====================================
-   ПОИСК
-===================================== */
-
-function setupSearch() {
-
-    const search =
-        document.getElementById("search");
-
-
-    search.addEventListener(
-        "input",
-        function () {
-
-            const value =
-                this.value
-                    .toLowerCase()
-                    .trim();
-
-
-            const cards =
-                document.querySelectorAll(".card");
-
-
-            cards.forEach(card => {
-
-                const title =
-                    (
-                        card.dataset.title || ""
-                    )
-                    .toLowerCase();
-
-
-                card.style.display =
-                    title.includes(value)
-                        ? ""
-                        : "none";
-
-            });
-
-        }
-    );
-
-}
-
-
-/* =====================================
-   МЕНЮ
-===================================== */
 
 const menuBtn =
     document.getElementById("menuBtn");
@@ -600,57 +191,122 @@ const overlay =
     document.getElementById("overlay");
 
 
-function openMenu() {
+/* =========================
+   МЕНЮ
+========================= */
+
+menuBtn.onclick = function () {
 
     sideMenu.classList.add("active");
+
     overlay.classList.add("active");
 
-    document.body.classList.add("menu-open");
-
-}
+};
 
 
-function closeMenu() {
+closeBtn.onclick = function () {
 
     sideMenu.classList.remove("active");
+
     overlay.classList.remove("active");
 
-    document.body.classList.remove("menu-open");
-
-}
+};
 
 
-menuBtn.addEventListener(
-    "click",
-    openMenu
-);
+overlay.onclick = function () {
+
+    sideMenu.classList.remove("active");
+
+    overlay.classList.remove("active");
+
+};
 
 
-closeBtn.addEventListener(
-    "click",
-    closeMenu
-);
+/* =========================
+   АВТОПРОИГРЫВАНИЕ
+========================= */
+
+const videos =
+    document.querySelectorAll(
+        ".video-card video"
+    );
 
 
-overlay.addEventListener(
-    "click",
-    closeMenu
-);
+const observer =
+    new IntersectionObserver(
+
+        entries => {
+
+            entries.forEach(entry => {
+
+                const video =
+                    entry.target;
 
 
-/* =====================================
-   ЗАПУСК
-===================================== */
+                if (entry.isIntersecting) {
 
-document.addEventListener(
-    "DOMContentLoaded",
-    loadVideos
-);
+                    videos.forEach(other => {
+
+                        if (other !== video) {
+
+                            other.pause();
+
+                        }
+
+                    });
+
+
+                    video.play()
+                        .catch(() => {});
+
+                } else {
+
+                    video.pause();
+
+                }
+
+            });
+
+        },
+
+        {
+            threshold: 0.7
+        }
+
+    );
+
+
+videos.forEach(video => {
+
+    observer.observe(video);
+
+});
+
+
+/* =========================
+   ЗВУК
+========================= */
+
+videos.forEach(video => {
+
+    video.addEventListener(
+        "click",
+        function () {
+
+            if (this.muted) {
+
+                this.muted = false;
+
+            }
+
+        }
+    );
+
+});
 
 </script>
 
 
-<script src="script.js"></script>
-
 </body>
+
 </html>
