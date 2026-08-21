@@ -2,13 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
 }
-
 
 html,
 body {
@@ -16,15 +10,21 @@ body {
     height: 100%;
 
     background: #000;
+
     color: #fff;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
     overflow: hidden;
 }
 
 
-/* =====================================
+/* =========================
    HEADER
-===================================== */
+========================= */
 
 header {
 
@@ -34,14 +34,16 @@ header {
     left: 0;
 
     width: 100%;
+
     height: 60px;
 
     display: flex;
+
     align-items: center;
 
     padding: 0 20px;
 
-    background: rgba(15,15,15,.96);
+    background: rgba(15,15,15,.95);
 
     border-bottom: 2px solid #ff0000;
 
@@ -54,8 +56,6 @@ header {
     font-size: 30px;
 
     font-weight: bold;
-
-    letter-spacing: -1px;
 }
 
 
@@ -69,21 +69,13 @@ header {
 }
 
 
-.header-right {
-
-    display: flex;
-
-    align-items: center;
+.language-box {
 
     margin-left: auto;
 
-    gap: 12px;
+    margin-right: 12px;
 }
 
-
-/* =====================================
-   LANGUAGE
-===================================== */
 
 .language-box select {
 
@@ -99,57 +91,9 @@ header {
 
     border-radius: 8px;
 
-    font-size: 14px;
-
     outline: none;
-
-    cursor: pointer;
 }
 
-
-/* =====================================
-   ADD VIDEO
-===================================== */
-
-.add-video-button {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    height: 38px;
-
-    padding: 0 14px;
-
-    background: #ff0000;
-
-    color: #fff;
-
-    text-decoration: none;
-
-    border-radius: 8px;
-
-    font-size: 14px;
-
-    font-weight: bold;
-
-    transition: .2s;
-}
-
-
-.add-video-button:hover {
-
-    background: #d00000;
-
-    transform: translateY(-1px);
-}
-
-
-/* =====================================
-   MENU BUTTON
-===================================== */
 
 .menu-btn {
 
@@ -159,167 +103,31 @@ header {
     display: flex;
 
     align-items: center;
-    justify-content: center;
 
-    color: #fff;
+    justify-content: center;
 
     font-size: 30px;
 
     cursor: pointer;
-
-    user-select: none;
 }
 
 
-/* =====================================
-   SEARCH
-===================================== */
-
-.search-box {
-
-    position: fixed;
-
-    top: 60px;
-    left: 0;
-
-    width: 100%;
-
-    display: flex;
-
-    justify-content: center;
-
-    padding: 10px 15px;
-
-    background: rgba(0,0,0,.94);
-
-    z-index: 900;
-}
-
-
-.search-box input {
-
-    width: 100%;
-
-    max-width: 600px;
-
-    height: 45px;
-
-    padding: 0 17px;
-
-    background: #1a1a1a;
-
-    color: #fff;
-
-    border: 2px solid #ff0000;
-
-    border-radius: 8px;
-
-    font-size: 16px;
-
-    outline: none;
-}
-
-
-.search-box input::placeholder {
-    color: #888;
-}
-
-
-.search-box input:focus {
-
-    box-shadow:
-        0 0 12px
-        rgba(255,0,0,.35);
-}
-
-
-/* =====================================
-   CATEGORIES
-===================================== */
-
-.categories {
-
-    position: fixed;
-
-    top: 115px;
-    left: 0;
-
-    width: 100%;
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    padding: 8px 15px;
-
-    background: rgba(0,0,0,.94);
-
-    z-index: 850;
-
-    overflow-x: auto;
-
-    scrollbar-width: none;
-}
-
-
-.categories::-webkit-scrollbar {
-    display: none;
-}
-
-
-.category-btn {
-
-    flex: 0 0 auto;
-
-    padding: 9px 17px;
-
-    background: #1a1a1a;
-
-    color: #fff;
-
-    border: 1px solid #ff0000;
-
-    border-radius: 9px;
-
-    text-decoration: none;
-
-    font-size: 14px;
-
-    transition: .2s;
-}
-
-
-.category-btn:hover,
-.category-btn.active {
-
-    background: #ff0000;
-
-    color: #fff;
-}
-
-
-/* =====================================
-   MAIN
-===================================== */
+/* =========================
+   ВИДЕО ЛЕНТА
+========================= */
 
 main {
 
     width: 100%;
-    height: 100vh;
 
-    background: #000;
+    height: 100vh;
 }
 
-
-/* =====================================
-   TIKTOK FEED
-===================================== */
 
 .videos {
 
     width: 100%;
+
     height: 100vh;
 
     overflow-y: auto;
@@ -331,8 +139,6 @@ main {
     scroll-behavior: smooth;
 
     scrollbar-width: none;
-
-    -webkit-overflow-scrolling: touch;
 }
 
 
@@ -341,18 +147,17 @@ main {
 }
 
 
-/* =====================================
-   VIDEO CARD
-===================================== */
+/* =========================
+   КАЖДОЕ ВИДЕО
+========================= */
 
-.card {
+.video-card {
 
     position: relative;
 
     width: 100%;
-    height: 100vh;
 
-    min-height: 100vh;
+    height: 100vh;
 
     scroll-snap-align: start;
 
@@ -360,151 +165,52 @@ main {
 
     background: #000;
 
-    overflow: hidden;
-}
-
-
-/* =====================================
-   VIDEO
-===================================== */
-
-.feed-video {
-
-    position: absolute;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-
-    background: #000;
-
-    cursor: pointer;
-}
-
-
-/* =====================================
-   DARK GRADIENT
-===================================== */
-
-.video-gradient {
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    bottom: 0;
-
-    height: 35%;
-
-    background:
-        linear-gradient(
-            transparent,
-            rgba(0,0,0,.85)
-        );
-
-    pointer-events: none;
-}
-
-
-/* =====================================
-   VIDEO INFO
-===================================== */
-
-.video-info {
-
-    position: absolute;
-
-    left: 20px;
-    right: 80px;
-
-    bottom: 28px;
-
-    z-index: 10;
-
-    pointer-events: none;
-}
-
-
-.video-title {
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    line-height: 1.35;
-
-    color: #fff;
-
-    text-shadow:
-        0 2px 5px #000,
-        0 0 10px #000;
-}
-
-
-/* =====================================
-   SOUND
-===================================== */
-
-.sound-button {
-
-    position: absolute;
-
-    right: 20px;
-    bottom: 25px;
-
-    width: 48px;
-    height: 48px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background: rgba(0,0,0,.65);
-
-    color: #fff;
-
-    font-size: 21px;
-
-    cursor: pointer;
-
-    z-index: 20;
-}
-
-
-.sound-button:hover {
-
-    background: #ff0000;
-}
-
-
-/* =====================================
-   NO VIDEOS
-===================================== */
-
-.no-videos {
-
-    width: 100%;
-    height: 100vh;
-
     display: flex;
 
     align-items: center;
 
     justify-content: center;
-
-    color: #888;
-
-    font-size: 18px;
 }
 
 
-/* =====================================
-   SIDE MENU
-===================================== */
+.video-card video {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    background: #000;
+}
+
+
+/* =========================
+   НАЗВАНИЕ
+========================= */
+
+.video-title {
+
+    position: absolute;
+
+    left: 20px;
+
+    bottom: 25px;
+
+    color: #fff;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    text-shadow:
+        0 2px 6px #000;
+}
+
+
+/* =========================
+   БОКОВОЕ МЕНЮ
+========================= */
 
 .side-menu {
 
@@ -524,15 +230,9 @@ main {
 
     z-index: 3000;
 
+    transition: .3s;
+
     padding-top: 15px;
-
-    box-shadow:
-        -5px 0 25px
-        rgba(0,0,0,.7);
-
-    transition: right .3s ease;
-
-    overflow-y: auto;
 }
 
 
@@ -549,8 +249,7 @@ main {
 
     text-align: right;
 
-    padding:
-        5px 20px 20px;
+    padding: 5px 20px 20px;
 
     cursor: pointer;
 }
@@ -566,24 +265,18 @@ main {
 
     text-decoration: none;
 
-    font-size: 16px;
-
-    border-bottom:
-        1px solid #333;
-
-    transition: .2s;
+    border-bottom: 1px solid #333;
 }
 
 
 .side-menu a:hover {
-
     background: #ff0000;
 }
 
 
-/* =====================================
+/* =========================
    OVERLAY
-===================================== */
+========================= */
 
 #overlay {
 
@@ -591,8 +284,7 @@ main {
 
     inset: 0;
 
-    background:
-        rgba(0,0,0,.65);
+    background: rgba(0,0,0,.7);
 
     z-index: 2500;
 
@@ -600,11 +292,7 @@ main {
 
     visibility: hidden;
 
-    pointer-events: none;
-
-    transition:
-        opacity .25s ease,
-        visibility .25s ease;
+    transition: .25s;
 }
 
 
@@ -613,19 +301,12 @@ main {
     opacity: 1;
 
     visibility: visible;
-
-    pointer-events: auto;
 }
 
 
-body.menu-open {
-    overflow: hidden;
-}
-
-
-/* =====================================
-   MOBILE
-===================================== */
+/* =========================
+   ТЕЛЕФОН
+========================= */
 
 @media (max-width: 700px) {
 
@@ -642,145 +323,49 @@ body.menu-open {
     }
 
 
-    .header-right {
-        gap: 6px;
-    }
-
-
     .language-box select {
 
-        height: 36px;
-
-        padding: 0 6px;
+        height: 35px;
 
         font-size: 12px;
-    }
 
-
-    .add-video-button {
-
-        display: none;
+        padding: 0 6px;
     }
 
 
     .menu-btn {
 
         width: 38px;
+
         height: 38px;
 
         font-size: 27px;
     }
 
 
-    .search-box {
-
-        top: 55px;
-
-        padding:
-            8px 10px;
-    }
-
-
-    .search-box input {
-
-        height: 42px;
-
-        font-size: 14px;
-    }
-
-
-    .categories {
-
-        top: 105px;
-
-        justify-content: flex-start;
-
-        gap: 8px;
-
-        padding:
-            7px 10px;
-    }
-
-
-    .category-btn {
-
-        padding:
-            8px 13px;
-
-        font-size: 13px;
-    }
-
-
-    .card {
+    .video-card {
 
         height: 100dvh;
-
-        min-height: 100dvh;
     }
 
 
-    .feed-video {
+    .video-card video {
 
         width: 100%;
+
         height: 100%;
 
         object-fit: contain;
     }
 
 
-    .video-info {
+    .video-title {
 
         left: 12px;
-        right: 70px;
 
-        bottom: 25px;
-    }
+        bottom: 20px;
 
-
-    .video-title {
         font-size: 15px;
     }
 
-
-    .sound-button {
-
-        right: 12px;
-        bottom: 20px;
-
-        width: 43px;
-        height: 43px;
-
-        font-size: 18px;
-    }
-}
-
-
-/* =====================================
-   SMALL PHONE
-===================================== */
-
-@media (max-width: 400px) {
-
-    .logo {
-        font-size: 19px;
-    }
-
-
-    .language-box select {
-        font-size: 11px;
-    }
-
-
-    .category-btn {
-
-        padding:
-            7px 11px;
-
-        font-size: 12px;
-    }
-
-
-    .video-title {
-        font-size: 14px;
-    }
 }
