@@ -48,7 +48,7 @@
 
     <a
         class="add-video-button"
-        href="/Create%20Video/index.html"
+        href="/Create%20video/index.html"
     >
         ➕ Добавить видео
     </a>
@@ -138,7 +138,7 @@
 
         <!-- ПРАВИЛЬНЫЙ ПУТЬ -->
 
-        <a href="/Create%20Video/index.html">
+        <a href="/Create%20video/index.html">
             ➕ Добавить видео
         </a>
 
@@ -158,8 +158,6 @@
     </h2>
 
 
-    <!-- СЮДА БУДУТ ДОБАВЛЯТЬСЯ ОПУБЛИКОВАННЫЕ ВИДЕО -->
-
     <div
         class="videos"
         id="videos"
@@ -170,10 +168,6 @@
 
 
 <script>
-
-/* =====================================
-   ЗАГРУЗКА ОПУБЛИКОВАННЫХ ВИДЕО
-===================================== */
 
 async function loadVideos() {
 
@@ -282,10 +276,6 @@ async function loadVideos() {
 }
 
 
-/* =====================================
-   ЗАЩИТА НАЗВАНИЯ ОТ HTML
-===================================== */
-
 function escapeHTML(text) {
 
     const element =
@@ -299,10 +289,6 @@ function escapeHTML(text) {
 
 }
 
-
-/* =====================================
-   УПРАВЛЕНИЕ ВИДЕО
-===================================== */
 
 function setupVideoControls() {
 
@@ -351,10 +337,6 @@ function setupVideoControls() {
 
 }
 
-
-/* =====================================
-   ПОИСК
-===================================== */
 
 const search =
     document.getElementById("search");
@@ -406,10 +388,6 @@ if (search) {
 }
 
 
-/* =====================================
-   ЗАГРУЗИТЬ ВИДЕО ПРИ ОТКРЫТИИ
-===================================== */
-
 document.addEventListener(
     "DOMContentLoaded",
     loadVideos
@@ -417,8 +395,6 @@ document.addEventListener(
 
 </script>
 
-
-<!-- ТВОЙ ОСНОВНОЙ SCRIPT.JS -->
 
 <script src="script.js"></script>
 
