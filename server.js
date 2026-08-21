@@ -1,32 +1,26 @@
 const express = require("express");
-const multer = require("multer");
+const path = require("path");
 const fs = require("fs");
-require("dotenv").config();
-
-const { v2: cloudinary } = require("cloudinary");
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
-/* =========================================
-   CLOUDINARY
-========================================= */
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
+const PUBLIC_DIR = path.join(__dirname, "public");
+const VIDEOS_DIR = path.join(PUBLIC_DIR, "videos");
+const DATA_DIR = path.join(PUBLIC_DIR, "data");
+const VIDEOS_JSON = path.join(DATA_DIR, "videos.json");
 
 
-/* =========================================
-   ПАПКИ И ЛОКАЛЬНАЯ БАЗА
-========================================= */
+/* =====================================
+   СОЗДАНИЕ ПАПОК
+===================================== */
 
-const ROOT = __dirname;
-const DATA_DIR = `${ROOT}/data`;
-const DATA_FILE = `${DATA_DIR}/videos.json`;
-
+if (!fs.existsSync(VIDEOS_DIR)) {
+    fs.mkdirSync(VIDEOS_DIR, {
+        recursive: true
+    });
+}
 
 if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, {
@@ -35,18 +29,24 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 
-if (!fs.existsSync(DATA_FILE)) {
+/* =====================================
+   СОЗДАНИЕ JSON
+===================================== */
+
+if (!fs.existsSync(VIDEOS_JSON)) {
+
     fs.writeFileSync(
-        DATA_FILE,
+        VIDEOS_JSON,
         "[]",
         "utf8"
     );
+
 }
 
 
-/* =========================================
+/* =====================================
    MIDDLEWARE
-========================================= */
+===================================== */
 
 app.use(express.json());
 
@@ -57,132 +57,18 @@ app.use(
 );
 
 
-/* =========================================
+/* =====================================
    СТАТИЧЕСКИЙ САЙТ
-========================================= */
+===================================== */
 
 app.use(
-    express.static(ROOT)
+    express.static(PUBLIC_DIR)
 );
 
 
-/* =========================================
-   MULTER
-   Храним загруженный файл временно
-   в памяти, затем отправляем в Cloudinary
-========================================= */
-
-const upload = multer({
-
-    storage: multer.memoryStorage(),
-
-    limits: {
-        // 100 МБ
-        fileSize: 100 * 1024 * 1024
-    },
-
-    fileFilter: function (req, file, cb) {
-
-        /* -------------------------
-           ВИДЕО
-        ------------------------- */
-
-        if (file.fieldname === "video") {
-
-            const allowedVideos = [
-                "video/mp4",
-                "video/webm",
-                "video/ogg",
-                "video/quicktime"
-            ];
-
-            if (
-                !allowedVideos.includes(
-                    file.mimetype
-                )
-            ) {
-
-                return cb(
-                    new Error(
-                        "Можно загружать только MP4, WEBM, OGG или MOV."
-                    )
-                );
-
-            }
-        }
-
-
-        /* -------------------------
-           ОБЛОЖКА
-        ------------------------- */
-
-        if (file.fieldname === "cover") {
-
-            const allowedImages = [
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-            ];
-
-            if (
-                !allowedImages.includes(
-                    file.mimetype
-                )
-            ) {
-
-                return cb(
-                    new Error(
-                        "Обложка должна быть JPG, PNG или WEBP."
-                    )
-                );
-
-            }
-        }
-
-
-        cb(null, true);
-    }
-
-});
-
-
-/* =========================================
-   ФУНКЦИЯ ЗАГРУЗКИ В CLOUDINARY
-========================================= */
-
-function uploadToCloudinary(
-    buffer,
-    options = {}
-) {
-
-    return new Promise(
-        (resolve, reject) => {
-
-            const stream =
-                cloudinary.uploader.upload_stream(
-                    options,
-                    (error, result) => {
-
-                        if (error) {
-                            reject(error);
-                            return;
-                        }
-
-                        resolve(result);
-                    }
-                );
-
-
-            stream.end(buffer);
-
-        }
-    );
-}
-
-
-/* =========================================
-   ПОЛУЧИТЬ ВСЕ ВИДЕО
-========================================= */
+/* =====================================
+   API: СПИСОК ВИДЕО
+===================================== */
 
 app.get(
     "/api/videos",
@@ -190,13 +76,14 @@ app.get(
 
         try {
 
-            const videos =
-                JSON.parse(
-                    fs.readFileSync(
-                        DATA_FILE,
-                        "utf8"
-                    )
+            const data =
+                fs.readFileSync(
+                    VIDEOS_JSON,
+                    "utf8"
                 );
+
+            const videos =
+                JSON.parse(data);
 
 
             res.json(videos);
@@ -204,16 +91,12 @@ app.get(
         } catch (error) {
 
             console.error(
-                "Ошибка чтения базы:",
+                "Ошибка чтения videos.json:",
                 error
             );
 
-
             res.status(500).json({
-
-                error:
-                    "Не удалось загрузить список видео."
-
+                error: "Не удалось загрузить видео"
             });
 
         }
@@ -222,298 +105,43 @@ app.get(
 );
 
 
-/* =========================================
-   ПОЛУЧИТЬ ВИДЕО ПО ID
-========================================= */
+/* =====================================
+   API: ДОБАВИТЬ ВИДЕО В JSON
+===================================== */
 
-app.get(
-    "/api/videos/:id",
+app.post(
+    "/api/videos",
     (req, res) => {
 
         try {
 
-            const videos =
-                JSON.parse(
-                    fs.readFileSync(
-                        DATA_FILE,
-                        "utf8"
-                    )
-                );
-
-
-            const video =
-                videos.find(
-                    item =>
-                        item.id ===
-                        req.params.id
-                );
+            const {
+                title,
+                video,
+                cover,
+                category
+            } = req.body;
 
 
             if (!video) {
 
-                return res.status(
-                    404
-                ).json({
-
-                    error:
-                        "Видео не найдено."
-
+                return res.status(400).json({
+                    error: "Не указана ссылка на видео"
                 });
 
             }
 
 
-            res.json(video);
-
-        } catch (error) {
-
-            console.error(error);
-
-
-            res.status(500).json({
-
-                error:
-                    "Ошибка сервера."
-
-            });
-
-        }
-
-    }
-);
-
-
-/* =========================================
-   ПУБЛИКАЦИЯ ВИДЕО
-========================================= */
-
-app.post(
-
-    "/api/videos",
-
-    upload.fields([
-
-        {
-            name: "video",
-            maxCount: 1
-        },
-
-        {
-            name: "cover",
-            maxCount: 1
-        }
-
-    ]),
-
-    async (req, res) => {
-
-        try {
-
-            /* -------------------------
-               ДАННЫЕ ФОРМЫ
-            ------------------------- */
-
-            const title =
-                (
-                    req.body.title ||
-                    ""
-                ).trim();
-
-
-            const description =
-                (
-                    req.body.description ||
-                    ""
-                ).trim();
-
-
-            const category =
-                (
-                    req.body.category ||
-                    ""
-                ).trim();
-
-
-            /* -------------------------
-               ПРОВЕРКА НАЗВАНИЯ
-            ------------------------- */
-
-            if (!title) {
-
-                return res.status(
-                    400
-                ).json({
-
-                    error:
-                        "Введите название видео."
-
-                });
-
-            }
-
-
-            /* -------------------------
-               ПРОВЕРКА КАТЕГОРИИ
-            ------------------------- */
-
-            if (!category) {
-
-                return res.status(
-                    400
-                ).json({
-
-                    error:
-                        "Выберите категорию."
-
-                });
-
-            }
-
-
-            /* -------------------------
-               ПРОВЕРКА ВИДЕО
-            ------------------------- */
-
-            if (
-                !req.files ||
-                !req.files.video ||
-                !req.files.video[0]
-            ) {
-
-                return res.status(
-                    400
-                ).json({
-
-                    error:
-                        "Выберите видео."
-
-                });
-
-            }
-
-
-            /* -------------------------
-               ПРОВЕРКА ОБЛОЖКИ
-            ------------------------- */
-
-            if (
-                !req.files.cover ||
-                !req.files.cover[0]
-            ) {
-
-                return res.status(
-                    400
-                ).json({
-
-                    error:
-                        "Выберите обложку."
-
-                });
-
-            }
-
-
-            const videoFile =
-                req.files.video[0];
-
-
-            const coverFile =
-                req.files.cover[0];
-
-
-            /* =================================
-               ЗАГРУЖАЕМ ВИДЕО В CLOUDINARY
-            ================================= */
-
-            console.log(
-                "Загрузка видео в Cloudinary..."
-            );
-
-
-            const uploadedVideo =
-                await uploadToCloudinary(
-
-                    videoFile.buffer,
-
-                    {
-                        resource_type: "video",
-
-                        folder:
-                            "y-fetish/videos",
-
-                        public_id:
-                            Date.now().toString(),
-
-                        overwrite: false
-                    }
-
+            const data =
+                fs.readFileSync(
+                    VIDEOS_JSON,
+                    "utf8"
                 );
 
-
-            console.log(
-                "Видео загружено:"
-            );
-
-            console.log(
-                uploadedVideo.secure_url
-            );
-
-
-            /* =================================
-               ЗАГРУЖАЕМ ОБЛОЖКУ
-            ================================= */
-
-            console.log(
-                "Загрузка обложки..."
-            );
-
-
-            const uploadedCover =
-                await uploadToCloudinary(
-
-                    coverFile.buffer,
-
-                    {
-                        resource_type: "image",
-
-                        folder:
-                            "y-fetish/covers",
-
-                        public_id:
-                            Date.now().toString() +
-                            "-cover",
-
-                        overwrite: false
-                    }
-
-                );
-
-
-            console.log(
-                "Обложка загружена:"
-            );
-
-            console.log(
-                uploadedCover.secure_url
-            );
-
-
-            /* =================================
-               ЧИТАЕМ БАЗУ
-            ================================= */
 
             const videos =
-                JSON.parse(
-                    fs.readFileSync(
-                        DATA_FILE,
-                        "utf8"
-                    )
-                );
+                JSON.parse(data);
 
-
-            /* =================================
-               СОЗДАЁМ ПУБЛИКАЦИЮ
-            ================================= */
 
             const newVideo = {
 
@@ -521,25 +149,16 @@ app.post(
                     Date.now().toString(),
 
                 title:
-                    title,
-
-                description:
-                    description,
-
-                category:
-                    category,
+                    title || "Без названия",
 
                 video:
-                    uploadedVideo.secure_url,
+                    video,
 
                 cover:
-                    uploadedCover.secure_url,
+                    cover || "",
 
-                cloudinaryVideoId:
-                    uploadedVideo.public_id,
-
-                cloudinaryCoverId:
-                    uploadedCover.public_id,
+                category:
+                    category || "Все",
 
                 createdAt:
                     new Date().toISOString()
@@ -547,112 +166,136 @@ app.post(
             };
 
 
-            /* =================================
-               НОВЫЕ ВИДЕО СВЕРХУ
-            ================================= */
+            videos.unshift(newVideo);
 
-            videos.unshift(
-                newVideo
-            );
-
-
-            /* =================================
-               СОХРАНЯЕМ БАЗУ
-            ================================= */
 
             fs.writeFileSync(
-
-                DATA_FILE,
-
+                VIDEOS_JSON,
                 JSON.stringify(
                     videos,
                     null,
                     2
                 ),
-
                 "utf8"
-
             );
 
 
-            /* =================================
-               ОТВЕТ
-            ================================= */
-
             res.json({
-
-                success:
-                    true,
-
-                video:
-                    newVideo
-
+                success: true,
+                video: newVideo
             });
-
 
         } catch (error) {
 
-            console.error(
-                "Ошибка публикации:",
-                error
-            );
-
+            console.error(error);
 
             res.status(500).json({
-
-                error:
-                    error.message ||
-                    "Ошибка при публикации видео."
-
+                error: "Не удалось добавить видео"
             });
 
         }
 
     }
-
 );
 
 
-/* =========================================
-   ОБРАБОТКА ОШИБОК
-========================================= */
+/* =====================================
+   API: УДАЛИТЬ ВИДЕО
+===================================== */
 
-app.use(
-    (
-        err,
-        req,
-        res,
-        next
-    ) => {
+app.delete(
+    "/api/videos/:id",
+    (req, res) => {
 
-        console.error(
-            "Ошибка:",
-            err
-        );
+        try {
+
+            const data =
+                fs.readFileSync(
+                    VIDEOS_JSON,
+                    "utf8"
+                );
 
 
-        res.status(400).json({
+            let videos =
+                JSON.parse(data);
 
-            error:
-                err.message ||
-                "Ошибка загрузки."
 
-        });
+            const oldLength =
+                videos.length;
+
+
+            videos =
+                videos.filter(
+                    video =>
+                        video.id !== req.params.id
+                );
+
+
+            if (
+                videos.length === oldLength
+            ) {
+
+                return res.status(404).json({
+                    error: "Видео не найдено"
+                });
+
+            }
+
+
+            fs.writeFileSync(
+                VIDEOS_JSON,
+                JSON.stringify(
+                    videos,
+                    null,
+                    2
+                ),
+                "utf8"
+            );
+
+
+            res.json({
+                success: true
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                error: "Ошибка удаления"
+            });
+
+        }
 
     }
 );
 
 
-/* =========================================
-   ЗАПУСК СЕРВЕРА
-========================================= */
+/* =====================================
+   404
+===================================== */
+
+app.use(
+    (req, res) => {
+
+        res.status(404).send(
+            "Страница не найдена"
+        );
+
+    }
+);
+
+
+/* =====================================
+   ЗАПУСК
+===================================== */
 
 app.listen(
     PORT,
     () => {
 
         console.log(
-            `Y-FETISH запущен: http://localhost:${PORT}`
+            `Y-FETISH запущен на порту ${PORT}`
         );
 
     }
