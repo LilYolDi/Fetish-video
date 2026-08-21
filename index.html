@@ -1,68 +1,61 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <title>Y-FETISH</title>
+    <title>Y-FETISH — Видео</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
+    <meta
+        name="description"
+        content="Y-FETISH — видео, категории и новые публикации."
     >
 
+    <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body>
-
 
 <header>
 
     <div class="logo">
-        <span class="red">Y</span>
-        <span class="white">-FETISH</span>
+        <span class="red">Y</span><span class="white">-FETISH</span>
     </div>
 
+    <div class="header-right">
 
-    <div class="language-box">
+        <div class="language-box">
+            <select id="language">
+                <option value="ru">🇷🇺 RU</option>
+                <option value="ua">🇺🇦 UA</option>
+                <option value="en">🇬🇧 EN</option>
+            </select>
+        </div>
 
-        <select id="language">
+        <a
+            class="add-video-button"
+            href="/Create%20video/index.html"
+        >
+            ➕ Добавить видео
+        </a>
 
-            <option value="ru">🇷🇺 RU</option>
-            <option value="ua">🇺🇦 UA</option>
-            <option value="en">🇬🇧 EN</option>
+        <div
+            id="menuBtn"
+            class="menu-btn"
+        >
+            ☰
+        </div>
 
-        </select>
-
-    </div>
-
-
-    <!-- КНОПКА ДОБАВЛЕНИЯ ВИДЕО -->
-
-    <a
-        class="add-video-button"
-        href="/Create%20video/index.html"
-    >
-        ➕ Добавить видео
-    </a>
-
-
-    <div
-        id="menuBtn"
-        class="menu-btn"
-    >
-        ☰
     </div>
 
 </header>
 
+
+<!-- ПОИСК -->
 
 <div class="search-box">
 
@@ -70,15 +63,18 @@
         type="text"
         id="search"
         placeholder="🔍 Поиск видео..."
+        autocomplete="off"
     >
 
 </div>
 
 
+<!-- КАТЕГОРИИ -->
+
 <div class="categories">
 
     <a
-        class="category-btn"
+        class="category-btn active"
         href="index.html"
     >
         Все
@@ -115,124 +111,118 @@
 </div>
 
 
-<main>
+<!-- БОКОВОЕ МЕНЮ -->
 
-
-    <nav
-        id="sideMenu"
-        class="side-menu"
-    >
-
-        <div
-            id="closeBtn"
-            class="close-btn"
-        >
-            ✕
-        </div>
-
-
-        <a href="/index.html">
-            🏠 Главная
-        </a>
-
-
-        <!-- ПРАВИЛЬНЫЙ ПУТЬ -->
-
-        <a href="/Create%20video/index.html">
-            ➕ Добавить видео
-        </a>
-
-
-        <a href="#">
-            👤 Профиль
-        </a>
-
-    </nav>
-
-
-    <div id="overlay"></div>
-
-
-    <h2>
-        Новые видео
-    </h2>
-
+<nav
+    id="sideMenu"
+    class="side-menu"
+>
 
     <div
-        class="videos"
-        id="videos"
-    ></div>
+        id="closeBtn"
+        class="close-btn"
+    >
+        ✕
+    </div>
 
+    <a href="/index.html">
+        🏠 Главная
+    </a>
+
+    <a href="/Create%20video/index.html">
+        ➕ Добавить видео
+    </a>
+
+    <a href="#">
+        👤 Профиль
+    </a>
+
+</nav>
+
+
+<div id="overlay"></div>
+
+
+<!-- ВИДЕО -->
+
+<main>
+
+    <div
+        id="videos"
+        class="videos"
+    ></div>
 
 </main>
 
 
 <script>
 
+let videosList = [];
+let currentIndex = 0;
+
+let touchStartY = 0;
+let touchEndY = 0;
+
+
+/* =====================================
+   ЗАГРУЗКА ВИДЕО
+===================================== */
+
 async function loadVideos() {
 
     const container =
         document.getElementById("videos");
-
 
     try {
 
         const response =
             await fetch("/api/videos");
 
-
         if (!response.ok) {
-
-            throw new Error(
-                "Ошибка загрузки списка видео"
-            );
-
+            throw new Error("Ошибка загрузки видео");
         }
 
-
-        const videos =
+        videosList =
             await response.json();
-
 
         container.innerHTML = "";
 
 
         if (
-            !Array.isArray(videos) ||
-            videos.length === 0
+            !Array.isArray(videosList) ||
+            videosList.length === 0
         ) {
 
             container.innerHTML = `
-                <p class="no-videos">
+                <div class="no-videos">
                     Пока нет опубликованных видео.
-                </p>
+                </div>
             `;
 
             return;
-
         }
 
 
-        videos.forEach(video => {
+        videosList.forEach((video, index) => {
 
             const card =
-                document.createElement("div");
+                document.createElement("article");
 
-
-            card.className =
-                "card";
-
+            card.className = "card";
 
             card.dataset.title =
-                video.title;
+                video.title || "";
 
 
             card.innerHTML = `
 
                 <video
-                    controls
+                    class="feed-video"
+                    playsinline
+                    loop
+                    muted
                     preload="metadata"
-                    poster="${video.cover}"
+                    poster="${video.cover || ""}"
                 >
 
                     <source
@@ -245,9 +235,23 @@ async function loadVideos() {
 
                 </video>
 
-                <p>
-                    ${escapeHTML(video.title)}
-                </p>
+                <div class="video-gradient"></div>
+
+                <div class="video-info">
+
+                    <div class="video-title">
+                        ${escapeHTML(video.title || "Без названия")}
+                    </div>
+
+                </div>
+
+                <button
+                    class="sound-button"
+                    type="button"
+                    aria-label="Звук"
+                >
+                    🔇
+                </button>
 
             `;
 
@@ -257,24 +261,29 @@ async function loadVideos() {
         });
 
 
-        setupVideoControls();
-
+        setupVideoObserver();
+        setupVideoClicks();
+        setupSoundButtons();
+        setupTouch();
 
     } catch (error) {
 
         console.error(error);
 
-
         container.innerHTML = `
-            <p>
+            <div class="no-videos">
                 Не удалось загрузить видео.
-            </p>
+            </div>
         `;
 
     }
 
 }
 
+
+/* =====================================
+   ЗАЩИТА HTML
+===================================== */
 
 function escapeHTML(text) {
 
@@ -284,49 +293,104 @@ function escapeHTML(text) {
     element.textContent =
         text || "";
 
-
     return element.innerHTML;
-
 }
 
 
-function setupVideoControls() {
+/* =====================================
+   АВТОПРОИГРЫВАНИЕ
+===================================== */
+
+function setupVideoObserver() {
+
+    const container =
+        document.getElementById("videos");
 
     const videos =
-        document.querySelectorAll(
-            "#videos video"
-        );
+        document.querySelectorAll(".feed-video");
 
 
-    videos.forEach(video => {
+    const observer =
+        new IntersectionObserver(
 
-        video.addEventListener(
-            "play",
-            () => {
+            entries => {
 
-                videos.forEach(other => {
+                entries.forEach(entry => {
 
-                    if (other !== video) {
+                    const video =
+                        entry.target;
 
-                        other.pause();
+
+                    if (entry.isIntersecting) {
+
+                        videos.forEach(other => {
+
+                            if (other !== video) {
+                                other.pause();
+                            }
+
+                        });
+
+
+                        video.play()
+                            .catch(() => {});
+
+
+                        currentIndex =
+                            [...videos]
+                            .indexOf(video);
+
+                    } else {
+
+                        video.pause();
 
                     }
 
                 });
 
+            },
+
+            {
+                root: container,
+                threshold: 0.75
             }
+
         );
 
 
+    videos.forEach(video => {
+
+        observer.observe(video);
+
+    });
+
+}
+
+
+/* =====================================
+   НАЖАТИЕ НА ВИДЕО
+===================================== */
+
+function setupVideoClicks() {
+
+    const videos =
+        document.querySelectorAll(".feed-video");
+
+
+    videos.forEach(video => {
+
         video.addEventListener(
-            "dblclick",
+            "click",
             () => {
 
-                if (
-                    video.requestFullscreen
-                ) {
+                if (video.paused) {
 
-                    video.requestFullscreen();
+                    video.play()
+                        .catch(() => {});
+
+                } else {
+
+                    video.pause();
 
                 }
 
@@ -338,11 +402,150 @@ function setupVideoControls() {
 }
 
 
-const search =
-    document.getElementById("search");
+/* =====================================
+   ЗВУК
+===================================== */
+
+function setupSoundButtons() {
+
+    const buttons =
+        document.querySelectorAll(".sound-button");
 
 
-if (search) {
+    buttons.forEach(button => {
+
+        button.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+
+                const card =
+                    button.closest(".card");
+
+                const video =
+                    card.querySelector("video");
+
+
+                video.muted =
+                    !video.muted;
+
+
+                button.textContent =
+                    video.muted
+                        ? "🔇"
+                        : "🔊";
+
+            }
+        );
+
+    });
+
+}
+
+
+/* =====================================
+   СВАЙП
+===================================== */
+
+function setupTouch() {
+
+    const container =
+        document.getElementById("videos");
+
+
+    container.addEventListener(
+        "touchstart",
+        event => {
+
+            touchStartY =
+                event.touches[0].clientY;
+
+        },
+        {
+            passive: true
+        }
+    );
+
+
+    container.addEventListener(
+        "touchend",
+        event => {
+
+            touchEndY =
+                event.changedTouches[0].clientY;
+
+            handleSwipe();
+
+        },
+        {
+            passive: true
+        }
+    );
+
+}
+
+
+function handleSwipe() {
+
+    const difference =
+        touchStartY - touchEndY;
+
+
+    if (Math.abs(difference) < 60) {
+        return;
+    }
+
+
+    const cards =
+        document.querySelectorAll(".card");
+
+
+    if (difference > 0) {
+
+        /* ВВЕРХ */
+
+        currentIndex =
+            Math.min(
+                currentIndex + 1,
+                cards.length - 1
+            );
+
+    } else {
+
+        /* ВНИЗ */
+
+        currentIndex =
+            Math.max(
+                currentIndex - 1,
+                0
+            );
+
+    }
+
+
+    if (cards[currentIndex]) {
+
+        cards[currentIndex].scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+}
+
+
+/* =====================================
+   ПОИСК
+===================================== */
+
+function setupSearch() {
+
+    const search =
+        document.getElementById("search");
+
 
     search.addEventListener(
         "input",
@@ -350,43 +553,94 @@ if (search) {
 
             const value =
                 this.value
-                .toLowerCase()
-                .trim();
+                    .toLowerCase()
+                    .trim();
 
 
-            document
-                .querySelectorAll(".card")
-                .forEach(card => {
-
-                    const title =
-                        (
-                            card.dataset.title ||
-                            ""
-                        )
-                        .toLowerCase();
+            const cards =
+                document.querySelectorAll(".card");
 
 
-                    if (
-                        title.includes(value)
-                    ) {
+            cards.forEach(card => {
 
-                        card.style.display =
-                            "";
+                const title =
+                    (
+                        card.dataset.title || ""
+                    )
+                    .toLowerCase();
 
-                    } else {
 
-                        card.style.display =
-                            "none";
+                card.style.display =
+                    title.includes(value)
+                        ? ""
+                        : "none";
 
-                    }
-
-                });
+            });
 
         }
     );
 
 }
 
+
+/* =====================================
+   МЕНЮ
+===================================== */
+
+const menuBtn =
+    document.getElementById("menuBtn");
+
+const closeBtn =
+    document.getElementById("closeBtn");
+
+const sideMenu =
+    document.getElementById("sideMenu");
+
+const overlay =
+    document.getElementById("overlay");
+
+
+function openMenu() {
+
+    sideMenu.classList.add("active");
+    overlay.classList.add("active");
+
+    document.body.classList.add("menu-open");
+
+}
+
+
+function closeMenu() {
+
+    sideMenu.classList.remove("active");
+    overlay.classList.remove("active");
+
+    document.body.classList.remove("menu-open");
+
+}
+
+
+menuBtn.addEventListener(
+    "click",
+    openMenu
+);
+
+
+closeBtn.addEventListener(
+    "click",
+    closeMenu
+);
+
+
+overlay.addEventListener(
+    "click",
+    closeMenu
+);
+
+
+/* =====================================
+   ЗАПУСК
+===================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -398,14 +652,5 @@ document.addEventListener(
 
 <script src="script.js"></script>
 
-
-<footer>
-
-    © 2026 Y-FETISH
-
-</footer>
-
-
 </body>
-
 </html>
