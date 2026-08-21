@@ -6,59 +6,44 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-const PUBLIC_DIR = path.join(__dirname, "public");
-const VIDEOS_DIR = path.join(PUBLIC_DIR, "videos");
-const DATA_DIR = path.join(PUBLIC_DIR, "data");
-const VIDEOS_JSON = path.join(DATA_DIR, "videos.json");
+/* =====================================
+   ПАПКА САЙТА
+===================================== */
+
+const PUBLIC_DIR = path.join(
+    __dirname,
+    "public"
+);
 
 
 /* =====================================
-   СОЗДАНИЕ ПАПОК
+   ПАПКА С ВИДЕО
+===================================== */
+
+const VIDEOS_DIR = path.join(
+    PUBLIC_DIR,
+    "videos"
+);
+
+
+/* =====================================
+   СОЗДАЁМ ПАПКУ VIDEOS
 ===================================== */
 
 if (!fs.existsSync(VIDEOS_DIR)) {
-    fs.mkdirSync(VIDEOS_DIR, {
-        recursive: true
-    });
-}
 
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, {
-        recursive: true
-    });
-}
-
-
-/* =====================================
-   СОЗДАНИЕ JSON
-===================================== */
-
-if (!fs.existsSync(VIDEOS_JSON)) {
-
-    fs.writeFileSync(
-        VIDEOS_JSON,
-        "[]",
-        "utf8"
+    fs.mkdirSync(
+        VIDEOS_DIR,
+        {
+            recursive: true
+        }
     );
 
 }
 
 
 /* =====================================
-   MIDDLEWARE
-===================================== */
-
-app.use(express.json());
-
-app.use(
-    express.urlencoded({
-        extended: true
-    })
-);
-
-
-/* =====================================
-   СТАТИЧЕСКИЙ САЙТ
+   СТАТИЧЕСКИЕ ФАЙЛЫ
 ===================================== */
 
 app.use(
@@ -67,7 +52,7 @@ app.use(
 
 
 /* =====================================
-   API: СПИСОК ВИДЕО
+   API — СПИСОК ВСЕХ ВИДЕО
 ===================================== */
 
 app.get(
@@ -76,14 +61,81 @@ app.get(
 
         try {
 
-            const data =
-                fs.readFileSync(
-                    VIDEOS_JSON,
-                    "utf8"
+            const files =
+                fs.readdirSync(
+                    VIDEOS_DIR
                 );
 
+
+            const allowedExtensions = [
+                ".mp4",
+                ".webm",
+                ".ogg",
+                ".mov",
+                ".m4v"
+            ];
+
+
             const videos =
-                JSON.parse(data);
+                files
+                    .filter(file => {
+
+                        const extension =
+                            path.extname(
+                                file
+                            ).toLowerCase();
+
+                        return allowedExtensions
+                            .includes(extension);
+
+                    })
+                    .map((file, index) => {
+
+                        return {
+
+                            id: index + 1,
+
+                            title:
+                                path
+                                    .parse(file)
+                                    .name
+                                    .replace(
+                                        /[_-]+/g,
+                                        " "
+                                    ),
+
+                            video:
+                                "/videos/" +
+                                encodeURIComponent(
+                                    file
+                                ),
+
+                            cover: "",
+
+                            category: "Все"
+
+                        };
+
+                    });
+
+
+            /*
+                Новые файлы сверху.
+                Если хочешь порядок video1,
+                video2, video3 — оставь sort.
+            */
+
+            videos.sort(
+                (a, b) =>
+                    a.title.localeCompare(
+                        b.title,
+                        undefined,
+                        {
+                            numeric: true,
+                            sensitivity: "base"
+                        }
+                    )
+            );
 
 
             res.json(videos);
@@ -91,12 +143,16 @@ app.get(
         } catch (error) {
 
             console.error(
-                "Ошибка чтения videos.json:",
+                "Ошибка чтения папки videos:",
                 error
             );
 
+
             res.status(500).json({
-                error: "Не удалось загрузить видео"
+
+                error:
+                    "Не удалось получить список видео"
+
             });
 
         }
@@ -106,166 +162,24 @@ app.get(
 
 
 /* =====================================
-   API: ДОБАВИТЬ ВИДЕО В JSON
+   ПРОВЕРКА API
 ===================================== */
 
-app.post(
-    "/api/videos",
+app.get(
+    "/api",
     (req, res) => {
 
-        try {
+        res.json({
 
-            const {
-                title,
-                video,
-                cover,
-                category
-            } = req.body;
+            status: "ok",
 
+            message:
+                "Y-FETISH API работает",
 
-            if (!video) {
+            videosFolder:
+                "/public/videos"
 
-                return res.status(400).json({
-                    error: "Не указана ссылка на видео"
-                });
-
-            }
-
-
-            const data =
-                fs.readFileSync(
-                    VIDEOS_JSON,
-                    "utf8"
-                );
-
-
-            const videos =
-                JSON.parse(data);
-
-
-            const newVideo = {
-
-                id:
-                    Date.now().toString(),
-
-                title:
-                    title || "Без названия",
-
-                video:
-                    video,
-
-                cover:
-                    cover || "",
-
-                category:
-                    category || "Все",
-
-                createdAt:
-                    new Date().toISOString()
-
-            };
-
-
-            videos.unshift(newVideo);
-
-
-            fs.writeFileSync(
-                VIDEOS_JSON,
-                JSON.stringify(
-                    videos,
-                    null,
-                    2
-                ),
-                "utf8"
-            );
-
-
-            res.json({
-                success: true,
-                video: newVideo
-            });
-
-        } catch (error) {
-
-            console.error(error);
-
-            res.status(500).json({
-                error: "Не удалось добавить видео"
-            });
-
-        }
-
-    }
-);
-
-
-/* =====================================
-   API: УДАЛИТЬ ВИДЕО
-===================================== */
-
-app.delete(
-    "/api/videos/:id",
-    (req, res) => {
-
-        try {
-
-            const data =
-                fs.readFileSync(
-                    VIDEOS_JSON,
-                    "utf8"
-                );
-
-
-            let videos =
-                JSON.parse(data);
-
-
-            const oldLength =
-                videos.length;
-
-
-            videos =
-                videos.filter(
-                    video =>
-                        video.id !== req.params.id
-                );
-
-
-            if (
-                videos.length === oldLength
-            ) {
-
-                return res.status(404).json({
-                    error: "Видео не найдено"
-                });
-
-            }
-
-
-            fs.writeFileSync(
-                VIDEOS_JSON,
-                JSON.stringify(
-                    videos,
-                    null,
-                    2
-                ),
-                "utf8"
-            );
-
-
-            res.json({
-                success: true
-            });
-
-        } catch (error) {
-
-            console.error(error);
-
-            res.status(500).json({
-                error: "Ошибка удаления"
-            });
-
-        }
+        });
 
     }
 );
@@ -296,6 +210,10 @@ app.listen(
 
         console.log(
             `Y-FETISH запущен на порту ${PORT}`
+        );
+
+        console.log(
+            `Видео находятся в: ${VIDEOS_DIR}`
         );
 
     }
