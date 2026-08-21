@@ -656,4 +656,274 @@ footer{
 
 
 
+/* ==========================================
+ФИКС МЕНЮ
+========================================== */
 
+body.menu-open {
+overflow: hidden;
+}
+
+/* ==========================================
+БОКОВОЕ МЕНЮ
+========================================== */
+
+.side-menu {
+width: 300px;
+max-width: 85vw;
+right: -320px;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
+
+.side-menu.active {
+right: 0;
+}
+
+/* Затемнение */
+
+#overlay {
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+transition:
+opacity .25s ease,
+visibility .25s ease;
+}
+
+#overlay.active {
+opacity: 1;
+visibility: visible;
+pointer-events: auto;
+}
+
+/* ==========================================
+FOOTER — ВСЕГДА ВНИЗУ
+========================================== */
+
+html,
+body {
+min-height: 100%;
+}
+
+body {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+
+main {
+flex: 1;
+}
+
+footer {
+width: 100%;
+margin-top: auto;
+padding: 30px 15px 20px;
+text-align: center;
+color: #777;
+font-size: 14px;
+}
+
+/* ==========================================
+МОБИЛЬНАЯ ВЕРСИЯ
+========================================== */
+
+@media (max-width: 700px) {
+
+```
+header {
+    height: 58px;
+    padding: 0 12px;
+}
+
+
+.logo {
+    font-size: 23px;
+}
+
+
+.language-box {
+    margin-right: 8px;
+}
+
+
+.language-box select {
+    height: 38px;
+    padding: 0 8px;
+    font-size: 13px;
+    border-width: 1px;
+}
+
+
+.menu-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+}
+
+
+.search-box {
+    margin-top: 65px;
+    padding: 12px 12px 8px;
+}
+
+
+.search-box input {
+    height: 46px;
+    font-size: 15px;
+    border-width: 1px;
+}
+
+
+.categories {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    margin: 10px 12px 18px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+
+.category-btn {
+    flex: 0 0 auto;
+    padding: 9px 15px;
+    font-size: 14px;
+    border-width: 1px;
+}
+
+
+main {
+    width: 100%;
+    padding: 0 12px 20px;
+}
+
+
+h2 {
+    font-size: 21px;
+    margin: 5px 0 15px;
+}
+
+
+.videos#videos {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+}
+
+
+.videos#videos .card {
+    border-radius: 10px !important;
+}
+
+
+.videos#videos .card video {
+    aspect-ratio: 16 / 9 !important;
+    border-radius: 0 !important;
+}
+
+
+.videos#videos .card p {
+    padding: 8px 9px !important;
+    font-size: 13px !important;
+}
+
+
+.side-menu {
+    width: 280px;
+    max-width: 82vw;
+}
+
+
+.close-btn {
+    height: 55px;
+    padding: 5px 18px;
+    font-size: 30px;
+}
+
+
+.side-menu a {
+    padding: 17px 20px;
+    font-size: 16px;
+}
+
+
+footer {
+    padding: 25px 10px 18px;
+    font-size: 13px;
+}
+```
+
+}
+
+/* ==========================================
+ОЧЕНЬ МАЛЕНЬКИЙ ТЕЛЕФОН
+========================================== */
+
+@media (max-width: 450px) {
+
+```
+header {
+    height: 55px;
+}
+
+
+.logo {
+    font-size: 20px;
+}
+
+
+.language-box select {
+    font-size: 12px;
+    padding: 0 6px;
+}
+
+
+.menu-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 26px;
+}
+
+
+.search-box {
+    margin-top: 62px;
+    padding: 10px;
+}
+
+
+.search-box input {
+    height: 44px;
+    font-size: 14px;
+}
+
+
+main {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+.videos#videos {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+}
+
+
+.videos#videos .card p {
+    font-size: 14px !important;
+}
+
+
+.side-menu {
+    width: 245px;
+}
+```
+
+}
